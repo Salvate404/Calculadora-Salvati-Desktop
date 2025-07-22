@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Toldos</title> <link rel="icon" type="image/png" href="imgfavicon.png">
+    <title>Calculadora de Toldos</title>
+    <link rel="icon" type="image/png" href="imgfavicon.png">
 
     <script>
         // --- LÓGICA DE VERIFICAÇÃO DE TIPO DE USUÁRIO (SEM CONTROLE DE SESSÃO POR TEMPO) ---
@@ -61,8 +62,8 @@
         }
 
         #tipoPrecoSection {
-    display: none; /* Agora o estilo está no CSS */
-}
+            display: none; /* Agora o estilo está no CSS */
+        }
 
         @keyframes fadeZoomIn {
             from { opacity: 0; transform: scale(1.05); } /* Começa invisível e com zoom para fora */
@@ -255,8 +256,7 @@
 <body>
     <div class="container">
         <div class="header-title-wrapper">
-            <img src="imglogo.jpg" alt="Logo da Empresa">
-        </div>
+            <img src="imglogo.png" alt="Logo da Empresa"> </div>
         <div class="input-group-row">
             <div class="input-group">
                 <label for="largura">Largura:</label>
@@ -359,7 +359,8 @@
 
         // --- Variáveis de estado global ---
         let tipoToldoSelecionado = 'cortina';
-        let tipoPrecoSelecionado = 'atacado'; // Padrão inicial
+        let tipoPrecoSelecionado = 'atacado'; // Padrão inicial para ge_finance
+
         let LONA_PADRAO_LARGURA_CORTINA = 1.40;
         let LONA_PADRAO_LARGURA_CAPOTA = 1.40;
 
@@ -379,12 +380,6 @@
                     CAPOTA_COSTURA_M2_RATE: 7.80,
                     PRECO_MIN_COSTURA_CORTINA: 45.00,
                     PRECO_MIN_COSTURA_CAPOTA: 45.00,
-                    MIN_LONA: { // Valores mínimos para a lona
-                        "Lowick": 26.70,
-                        "SL": 27.00,
-                        "Slim": 22.30,
-                        "TD60": 22.30
-                    },
                     LARGURA_PADRAO_LONA_GERAL: 1.40,
                     LARGURA_PADRAO_LONA_SANSUY: 1.45
                 },
@@ -392,7 +387,7 @@
                     PRECOS_LONA: {
                         "Sansuy: R$ 42,50": 42.50,
                         "Night&day: R$ 35,00": 35.00,
-                        "Lowick: R$ 30,00": 30.00, // Note: Lowick igual no varejo
+                        "Lowick: R$ 30,00": 30.00,
                         "SL: R$ 29,00": 29.00,
                         "Slim: R$ 23,00": 23.00,
                         "TD60: R$ 23,00": 23.00
@@ -401,12 +396,6 @@
                     CAPOTA_COSTURA_M2_RATE: 10.00,
                     PRECO_MIN_COSTURA_CORTINA: 45.00,
                     PRECO_MIN_COSTURA_CAPOTA: 45.00,
-                    MIN_LONA: { // Valores mínimos para a lona
-                        "Lowick": 26.70,
-                        "SL": 27.00,
-                        "Slim": 22.30,
-                        "TD60": 22.30
-                    },
                     LARGURA_PADRAO_LONA_GERAL: 1.40,
                     LARGURA_PADRAO_LONA_SANSUY: 1.45
                 }
@@ -425,14 +414,8 @@
                     CAPOTA_COSTURA_M2_RATE: 15.50,
                     PRECO_MIN_COSTURA_CORTINA: 37.50,
                     PRECO_MIN_COSTURA_CAPOTA: 45.00,
-                     MIN_LONA: { // Valores mínimos para a lona
-                        "Lowick": 26.70,
-                        "SL": 27.00,
-                        "Slim": 22.30,
-                        "TD60": 22.30
-                    },
-                    LARGURA_PADRAO_LONA_GERAL: 1.40, // Largura padrão para Hyper
-                    LARGURA_PADRAO_LONA_SANSUY: 1.45 // Sansuy mantém 1.45 para Hyper
+                    LARGURA_PADRAO_LONA_GERAL: 1.40,
+                    LARGURA_PADRAO_LONA_SANSUY: 1.45
                 }
             }
         };
@@ -440,11 +423,13 @@
         // Variável para armazenar a configuração atual (preços, taxas etc.)
         let currentConfig = {};
         let currentPrecosLona = {};
-        let currentMinLona = {};
 
 
         function loadUserConfig() {
-            // Define o tipo de preço padrão para usuários Hyper
+            // Captura a lona atualmente selecionada ANTES de qualquer alteração no DOM ou nos dados.
+            const lonaAnteriormenteSelecionada = marcaLonaSelect.value;
+            
+            // Define o tipo de preço padrão para usuários Hyper e visibilidade da seção
             if (tipoUsuarioAtual === 'hyper') {
                 tipoPrecoSelecionado = 'padrao';
                 tipoPrecoSection.style.display = 'none'; // Oculta a seção de preço
@@ -452,6 +437,21 @@
             } else if (tipoUsuarioAtual === 'ge_finance') {
                 tipoPrecoSection.style.display = 'block'; // Mostra a seção de preço
                 userTypeDisplay.textContent = 'vsGeFinance';
+                
+                // Se tipoPrecoSelecionado ainda não foi definido (primeira carga da página)
+                // OU se foi redefinido por alguma outra lógica (o que não deveria acontecer, mas é uma segurança)
+                if (!tipoPrecoSelecionado) { 
+                   tipoPrecoSelecionado = 'atacado'; // Define atacado como padrão para a primeira carga, conforme seu HTML
+                }
+                
+                // Remove a classe 'selected' de todos os botões de preço
+                precoButtons.forEach(btn => btn.classList.remove('selected'));
+                // Adiciona a classe 'selected' ao botão correspondente ao tipoPrecoSelecionado atual
+                const activePriceButton = document.querySelector(`#tipoPrecoSection button[data-price-type="${tipoPrecoSelecionado}"]`);
+                if (activePriceButton) {
+                    activePriceButton.classList.add('selected');
+                }
+
             } else {
                 console.warn("Tipo de usuário não reconhecido ou ausente após carregamento. Redirecionando para login.");
                 localStorage.removeItem('tipoUsuario');
@@ -462,28 +462,41 @@
             // Carrega as configurações com base no tipo de usuário e tipo de preço
             currentConfig = CONFIGURACOES_USUARIO[tipoUsuarioAtual][tipoPrecoSelecionado];
             currentPrecosLona = currentConfig.PRECOS_LONA;
-            currentMinLona = currentConfig.MIN_LONA;
 
             // Define as larguras padrão globais baseadas na configuração atual
             LONA_PADRAO_LARGURA_CORTINA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
             LONA_PADRAO_LARGURA_CAPOTA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
 
             // Atualiza o dropdown de lonas com os preços da configuração atual
-            updateLonaSelectOptions();
+            updateLonaSelectOptions(lonaAnteriormenteSelecionada);
         }
         
         // Atualiza as opções do select de lona e define o preço visível
-        function updateLonaSelectOptions() {
+        // Adicionada a lonaParaManterSelecionada para tentar preservar a seleção
+        function updateLonaSelectOptions(lonaParaManterSelecionada = null) {
             marcaLonaSelect.innerHTML = '';
+            let lonaFoundAndSelected = false;
+
             for (const marcaPrecoString in currentPrecosLona) {
                 const option = document.createElement('option');
                 option.value = marcaPrecoString; // Ex: "Sansuy: R$ 35,70"
                 option.textContent = marcaPrecoString;
                 marcaLonaSelect.appendChild(option);
+
+                // Tenta manter a lona anteriormente selecionada
+                if (lonaParaManterSelecionada && marcaPrecoString === lonaParaManterSelecionada) {
+                    option.selected = true;
+                    lonaFoundAndSelected = true;
+                }
             }
-            // Seleciona a primeira opção por padrão ou a que já estava selecionada se for válida
-            if (Object.keys(currentPrecosLona).length > 0) {
-                marcaLonaSelect.value = Object.keys(currentPrecosLona)[0];
+            // Se a lona anterior não foi encontrada ou não havia uma, defina o padrão (SL)
+            if (!lonaFoundAndSelected) {
+                 const slLonaKey = Object.keys(currentPrecosLona).find(key => key.includes("SL:"));
+                 if (slLonaKey) {
+                     marcaLonaSelect.value = slLonaKey;
+                 } else if (Object.keys(currentPrecosLona).length > 0) {
+                    marcaLonaSelect.value = Object.keys(currentPrecosLona)[0]; // Fallback para a primeira se SL não existir
+                 }
             }
         }
 
@@ -526,19 +539,14 @@
             let metragem = pano * (caimento + 0.10);
             let precoLona = metragem * precoM2Lona;
 
-            // Aplica valor mínimo da lona, se houver
-            const nomeLona = marcaLonaSelect.value.split(':')[0].trim(); // Pega apenas o nome da lona (ex: "Sansuy")
-            const minLonaParaEsta = currentMinLona[nomeLona] || 0;
-            if (minLonaParaEsta > 0 && precoLona < minLonaParaEsta) {
-                precoLona = minLonaParaEsta;
-            }
+            // **REMOVIDO:** Lógica de preço mínimo da lona
 
             // Cálculo da costura para GE Finance
             let precoCostura = (Math.ceil(largura) * currentConfig.CORTINA_COSTURA_M2_RATE * (caimento + 0.10));
             
             // Cálculo da costura para Hyper (ajuste na fórmula, conforme sua especificação)
             if (tipoUsuarioAtual === 'hyper') {
-                precoCostura = largura * currentConfig.CORTINA_COSTURA_M2_RATE * (caimento + 0.10);
+                precoCostura = largura * currentConfig.CORTINA_COSTURA_M2_RATE * caimento;
             }
             
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CORTINA) {
@@ -554,12 +562,7 @@
             let metragem = pano * pern;
             let precoLona = metragem * precoM2Lona;
 
-            // Aplica valor mínimo da lona, se houver
-            const nomeLona = marcaLonaSelect.value.split(':')[0].trim();
-            const minLonaParaEsta = currentMinLona[nomeLona] || 0;
-            if (minLonaParaEsta > 0 && precoLona < minLonaParaEsta) {
-                precoLona = minLonaParaEsta;
-            }
+            // **REMOVIDO:** Lógica de preço mínimo da lona
 
             // Cálculo da costura para GE Finance
             let precoCostura = (Math.ceil(larg)) * currentConfig.CAPOTA_COSTURA_M2_RATE * pern;
@@ -622,9 +625,11 @@
         // Event listeners para os novos botões de preço (Atacado/Varejo)
         precoButtons.forEach(button => {
             button.addEventListener('click', () => {
+                // Remove a classe 'selected' de todos os botões de preço
                 precoButtons.forEach(btn => btn.classList.remove('selected'));
+                // Adiciona a classe 'selected' ao botão clicado
                 button.classList.add('selected');
-                tipoPrecoSelecionado = button.dataset.priceType;
+                tipoPrecoSelecionado = button.dataset.priceType; // Atualiza a variável global
                 loadUserConfig(); // Recarrega todas as configurações (incluindo preços de lona)
                 handleLonaChange(); // Força recálculo com nova lona padrão e preços
             });
