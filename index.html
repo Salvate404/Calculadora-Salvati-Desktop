@@ -552,7 +552,7 @@
             let precoCostura = (Math.ceil(largura) * currentConfig.CORTINA_COSTURA_M2_RATE * (caimento + 0.10));
             
             if (tipoUsuarioAtual === 'hyper') {
-                precoCostura = largura * currentConfig.CORTURA_COSTURA_M2_RATE * caimento;
+                precoCostura = largura * currentConfig.CORTINA_COSTURA_M2_RATE * caimento;
             }
             
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CORTINA) {
