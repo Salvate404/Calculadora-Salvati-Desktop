@@ -45,7 +45,7 @@
             color: #333;
 
             /* --- IMAGEM DE FUNDO DA TELA --- */
-            background-image: url(imgsalvati.png); /* <-- SUBSTITUA ESTE CAMINHO PELA SUA IMAGEM */
+            background-image: url(imgsalvati.png);
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
@@ -53,21 +53,21 @@
 
             /* --- REMOVER ROLAGEM VERTICAL DO BODY --- */
             overflow: hidden;
-            position: relative; /* Necessário para posicionamento absoluto dos elementos */
+            position: relative;
 
             /* --- ANIMAÇÃO DE ENTRADA (FADE-IN COM LEVE ZOOM) --- */
             opacity: 0;
-            transform: scale(1.05); /* Começa ligeiramente MAIOR para dar efeito de zoom-in */
+            transform: scale(1.05);
             animation: fadeZoomIn 0.5s ease-out forwards;
         }
 
         #tipoPrecoSection {
-            display: none; /* Agora o estilo está no CSS */
+            display: none;
         }
 
         @keyframes fadeZoomIn {
-            from { opacity: 0; transform: scale(1.05); } /* Começa invisível e com zoom para fora */
-            to { opacity: 1; transform: scale(1); } /* Termina visível e no tamanho normal */
+            from { opacity: 0; transform: scale(1.05); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         /* --- ANIMAÇÃO DE SAÍDA (FADE-OUT COM LEVE ZOOM) --- */
@@ -76,8 +76,8 @@
         }
 
         @keyframes fadeZoomOut {
-            from { opacity: 1; transform: scale(1); } /* Começa visível e no tamanho normal */
-            to { opacity: 0; transform: scale(0.95); } /* Termina invisível e com leve zoom para dentro */
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
         }
 
         .container {
@@ -88,25 +88,26 @@
             width: 100%;
             max-width: 800px;
             text-align: center;
+            
             max-height: calc(100vh - 40px);
             overflow-y: auto;
+            box-sizing: border-box;
         }
 
-        /* --- ESTILOS PARA O TÍTULO E IMAGEM (IMAGEM AGORA ACIMA DO TÍTULO) --- */
         .header-title-wrapper {
             display: flex;
-            flex-direction: column; /* Coloca os itens em coluna (um acima do outro) */
-            align-items: center; /* Centraliza horizontalmente */
-            justify-content: center; /* Centraliza verticalmente (se houver espaço) */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 25px;
-            gap: 10px; /* Espaçamento entre a imagem e o título */
-            padding-top: 30px; /* Margem no topo */
+            gap: 10px;
+            padding-top: 30px;
         }
 
         .header-title-wrapper img {
-            max-height: 100px; /* Ajustado para a imagem ficar mais em destaque */
+            max-height: 100px;
             width: auto;
-            margin-bottom: 10px; /* Espaçamento extra entre a imagem e o título */
+            margin-bottom: 10px;
         }
 
         .header-title-wrapper h1 {
@@ -118,7 +119,6 @@
             display: block;
         }
 
-        /* --- ESTILOS PARA AGRUPAR LARGURA E CAIMENTO --- */
         .input-group-row {
             display: flex;
             gap: 20px;
@@ -195,20 +195,43 @@
             border-radius: 3px;
         }
 
-        .price-list {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            font-size: 0.9em;
-            color: #333;
-            text-align: left;
-        }
-
         .price-list div {
             margin-bottom: 5px;
         }
+        
+        /* --- ESTILOS PARA OS DETALHES DO CÁLCULO (AJUSTADO) --- */
+        .result-details {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            
+            display: flex;
+            justify-content: space-around; /* Distribui o espaço entre os itens */
+            flex-wrap: wrap; /* Permite que os itens quebrem a linha se não houver espaço */
+            gap: 'row-gap'; /* Espaço entre os itens */
+        }
 
+        .result-details .spec-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            text-align: center;
+            font-size: 0.95em;
+            /* Flex-basis para definir uma largura mínima, para evitar que fiquem muito estreitos */
+            flex-basis: 'width'; /* 4 itens por linha, com um pouco de espaço entre eles */
+            min-width: 100px; /* Largura mínima para cada item */
+        }
+
+        .result-details .spec-item strong {
+            display: block;
+            margin-bottom: 'length-percentage';
+            color: #555;
+            font-weight: bold;
+            white-space: nowrap; /* Impede que o título quebre a linha */
+        }
+        
         .result-area {
             background-color: #d4edda;
             color: #155724;
@@ -220,11 +243,10 @@
             border: 1px solid #c3e6cb;
         }
 
-        /* --- ESTILOS PARA O BOTÃO DE DESLOGAR (CANTO INFERIOR DIREITO) --- */
         #logoutButton {
             position: absolute;
-            bottom: 20px; /* ALINHAMENTO CORRIGIDO: Agora igual ao userTypeDisplay */
-            right: 20px; /* Fica no canto inferior direito */
+            bottom: 20px;
+            right: 20px;
             background-color: #dc3545;
             color: white;
             border: none;
@@ -235,20 +257,21 @@
             transition: background-color 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            z-index: 10;
         }
 
         #logoutButton:hover {
             background-color: #c82333;
         }
 
-        /* --- ESTILOS PARA O TEXTO DE TIPO DE USUÁRIO (CANTO INFERIOR ESQUERDO) --- */
         #userTypeDisplay {
             position: absolute;
-            bottom: 20px; /* No canto inferior esquerdo */
-            left: 20px; /* No canto inferior esquerdo */
-            color: white; /* Cor do texto em branco */
-            font-size: 0.85em; /* Um pouco menor para ser discreto */
-            font-weight: normal; /* Sem negrito para ser discreto */
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            font-size: 0.85em;
+            font-weight: normal;
+            z-index: 10;
         }
     </style>
 </head>
@@ -256,7 +279,8 @@
 <body>
     <div class="container">
         <div class="header-title-wrapper">
-            <img src="imglogo.png" alt="Logo da Empresa"> </div>
+            <img src="imglogo.png" alt="Logo da Empresa">
+        </div>
         <div class="input-group-row">
             <div class="input-group">
                 <label for="largura">Largura:</label>
@@ -297,6 +321,9 @@
             <select id="marcaLona"></select>
             <div id="priceList" class="price-list"></div>
         </div>
+
+        <div id="resultDetails" class="result-details">
+            </div>
 
         <div class="result-area">
             Valor do toldo: <span id="valorTotal">R$ 0,00</span>
@@ -343,13 +370,13 @@
         const larguraInput = document.getElementById('largura');
         const medidaSecundariaInput = document.getElementById('medidaSecundaria');
         const medidaSecundariaLabel = document.getElementById('medidaSecundariaLabel');
-        const tipoToldoButtons = document.querySelectorAll('.option-buttons button[data-type]'); // Seleciona apenas botões de tipo de toldo
+        const tipoToldoButtons = document.querySelectorAll('.option-buttons button[data-type]');
         const marcaLonaSelect = document.getElementById('marcaLona');
         const priceListDiv = document.getElementById('priceList');
         const valorTotalSpan = document.getElementById('valorTotal');
         const userTypeDisplay = document.getElementById('userTypeDisplay');
+        const resultDetailsDiv = document.getElementById('resultDetails');
 
-        // NOVOS ELEMENTOS PARA ATACADO/VAREJO
         const tipoPrecoSection = document.getElementById('tipoPrecoSection');
         const precoButtons = document.querySelectorAll('#tipoPrecoSection .option-buttons button');
 
@@ -359,7 +386,7 @@
 
         // --- Variáveis de estado global ---
         let tipoToldoSelecionado = 'cortina';
-        let tipoPrecoSelecionado = 'atacado'; // Padrão inicial para ge_finance
+        let tipoPrecoSelecionado = 'atacado';
 
         let LONA_PADRAO_LARGURA_CORTINA = 1.40;
         let LONA_PADRAO_LARGURA_CAPOTA = 1.40;
@@ -401,7 +428,7 @@
                 }
             },
             'hyper': {
-                'padrao': { // Hyper não tem atacado/varejo, usará 'padrao'
+                'padrao': {
                     PRECOS_LONA: {
                         "Sansuy: R$ 35,70": 35.70,
                         "Night&day: R$ 30,00": 30.00,
@@ -420,33 +447,26 @@
             }
         };
 
-        // Variável para armazenar a configuração atual (preços, taxas etc.)
         let currentConfig = {};
         let currentPrecosLona = {};
 
 
         function loadUserConfig() {
-            // Captura a lona atualmente selecionada ANTES de qualquer alteração no DOM ou nos dados.
             const lonaAnteriormenteSelecionada = marcaLonaSelect.value;
             
-            // Define o tipo de preço padrão para usuários Hyper e visibilidade da seção
             if (tipoUsuarioAtual === 'hyper') {
                 tipoPrecoSelecionado = 'padrao';
-                tipoPrecoSection.style.display = 'none'; // Oculta a seção de preço
+                tipoPrecoSection.style.display = 'none';
                 userTypeDisplay.textContent = 'vsHyper';
             } else if (tipoUsuarioAtual === 'ge_finance') {
-                tipoPrecoSection.style.display = 'block'; // Mostra a seção de preço
+                tipoPrecoSection.style.display = 'block';
                 userTypeDisplay.textContent = 'vsGeFinance';
                 
-                // Se tipoPrecoSelecionado ainda não foi definido (primeira carga da página)
-                // OU se foi redefinido por alguma outra lógica (o que não deveria acontecer, mas é uma segurança)
-                if (!tipoPrecoSelecionado) { 
-                   tipoPrecoSelecionado = 'atacado'; // Define atacado como padrão para a primeira carga, conforme seu HTML
+                if (!tipoPrecoSelecionado) {
+                    tipoPrecoSelecionado = 'atacado';
                 }
                 
-                // Remove a classe 'selected' de todos os botões de preço
                 precoButtons.forEach(btn => btn.classList.remove('selected'));
-                // Adiciona a classe 'selected' ao botão correspondente ao tipoPrecoSelecionado atual
                 const activePriceButton = document.querySelector(`#tipoPrecoSection button[data-price-type="${tipoPrecoSelecionado}"]`);
                 if (activePriceButton) {
                     activePriceButton.classList.add('selected');
@@ -456,53 +476,44 @@
                 console.warn("Tipo de usuário não reconhecido ou ausente após carregamento. Redirecionando para login.");
                 localStorage.removeItem('tipoUsuario');
                 window.location.href = 'login.html';
-                return; // Impede que o restante da função seja executado
+                return;
             }
 
-            // Carrega as configurações com base no tipo de usuário e tipo de preço
             currentConfig = CONFIGURACOES_USUARIO[tipoUsuarioAtual][tipoPrecoSelecionado];
             currentPrecosLona = currentConfig.PRECOS_LONA;
 
-            // Define as larguras padrão globais baseadas na configuração atual
             LONA_PADRAO_LARGURA_CORTINA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
             LONA_PADRAO_LARGURA_CAPOTA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
 
-            // Atualiza o dropdown de lonas com os preços da configuração atual
             updateLonaSelectOptions(lonaAnteriormenteSelecionada);
         }
         
-        // Atualiza as opções do select de lona e define o preço visível
-        // Adicionada a lonaParaManterSelecionada para tentar preservar a seleção
         function updateLonaSelectOptions(lonaParaManterSelecionada = null) {
             marcaLonaSelect.innerHTML = '';
             let lonaFoundAndSelected = false;
 
             for (const marcaPrecoString in currentPrecosLona) {
                 const option = document.createElement('option');
-                option.value = marcaPrecoString; // Ex: "Sansuy: R$ 35,70"
+                option.value = marcaPrecoString;
                 option.textContent = marcaPrecoString;
                 marcaLonaSelect.appendChild(option);
 
-                // Tenta manter a lona anteriormente selecionada
                 if (lonaParaManterSelecionada && marcaPrecoString === lonaParaManterSelecionada) {
                     option.selected = true;
                     lonaFoundAndSelected = true;
                 }
             }
-            // Se a lona anterior não foi encontrada ou não havia uma, defina o padrão (SL)
             if (!lonaFoundAndSelected) {
-                 const slLonaKey = Object.keys(currentPrecosLona).find(key => key.includes("SL:"));
-                 if (slLonaKey) {
-                     marcaLonaSelect.value = slLonaKey;
-                 } else if (Object.keys(currentPrecosLona).length > 0) {
-                    marcaLonaSelect.value = Object.keys(currentPrecosLona)[0]; // Fallback para a primeira se SL não existir
-                 }
+                const slLonaKey = Object.keys(currentPrecosLona).find(key => key.includes("SL:"));
+                if (slLonaKey) {
+                    marcaLonaSelect.value = slLonaKey;
+                } else if (Object.keys(currentPrecosLona).length > 0) {
+                    marcaLonaSelect.value = Object.keys(currentPrecosLona)[0];
+                }
             }
         }
 
-
         function handleLonaChange() {
-            // Restaura as larguras padrão da lona para o valor geral da configuração atual
             LONA_PADRAO_LARGURA_CORTINA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
             LONA_PADRAO_LARGURA_CAPOTA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
 
@@ -514,14 +525,13 @@
             } else {
                 console.log("Outra lona selecionada. Largura de lona redefinida para padrão do usuário (" + currentConfig.LARGURA_PADRAO_LONA_GERAL + "m).");
             }
-            calcularPreco(); // Recalcula o preço com a nova largura de lona e preço de lona atual
+            calcularPreco();
         }
 
-
         function init() {
-            loadUserConfig(); // Carrega as configurações do usuário e tipo de preço inicial
+            loadUserConfig();
             updateMeasureLabel();
-            handleLonaChange(); // Chama esta função para definir a largura inicial da lona e calcular
+            handleLonaChange();
         }
 
         function updateMeasureLabel() {
@@ -539,20 +549,16 @@
             let metragem = pano * (caimento + 0.10);
             let precoLona = metragem * precoM2Lona;
 
-            // **REMOVIDO:** Lógica de preço mínimo da lona
-
-            // Cálculo da costura para GE Finance
             let precoCostura = (Math.ceil(largura) * currentConfig.CORTINA_COSTURA_M2_RATE * (caimento + 0.10));
             
-            // Cálculo da costura para Hyper (ajuste na fórmula, conforme sua especificação)
             if (tipoUsuarioAtual === 'hyper') {
-                precoCostura = largura * currentConfig.CORTINA_COSTURA_M2_RATE * caimento;
+                precoCostura = largura * currentConfig.CORTURA_COSTURA_M2_RATE * caimento;
             }
             
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CORTINA) {
                 precoCostura = currentConfig.PRECO_MIN_COSTURA_CORTINA;
             }
-            return { precoLona, precoCostura };
+            return { pano, metragem, precoLona, precoCostura };
         }
 
         function calcularPrecoCapota(largura, perna, precoM2Lona) {
@@ -562,12 +568,8 @@
             let metragem = pano * pern;
             let precoLona = metragem * precoM2Lona;
 
-            // **REMOVIDO:** Lógica de preço mínimo da lona
-
-            // Cálculo da costura para GE Finance
             let precoCostura = (Math.ceil(larg)) * currentConfig.CAPOTA_COSTURA_M2_RATE * pern;
 
-            // Cálculo da costura para Hyper (ajuste na fórmula, conforme sua especificação)
             if (tipoUsuarioAtual === 'hyper') {
                 precoCostura = larg * currentConfig.CAPOTA_COSTURA_M2_RATE;
             }
@@ -575,42 +577,55 @@
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CAPOTA) {
                 precoCostura = currentConfig.PRECO_MIN_COSTURA_CAPOTA;
             }
-            return { precoLona, precoCostura };
+            return { pano, metragem, precoLona, precoCostura };
         }
 
         function calcularPreco() {
             const largura = getNumericValue('largura');
             const medidaSecundaria = getNumericValue('medidaSecundaria');
 
-            if (largura <= 0 || medidaSecundaria <= 0) {
-                valorTotalSpan.textContent = "R$ 0,00";
-                return;
+            let resultadoCalculo = { pano: 0, metragem: 0, precoLona: 0, precoCostura: 0 };
+            let custoTotal = 0;
+
+            if (largura > 0 && medidaSecundaria > 0) {
+                const marcaLonaAtualString = marcaLonaSelect.value;
+                const precoM2Lona = currentPrecosLona[marcaLonaAtualString];
+
+                if (precoM2Lona === undefined) {
+                    valorTotalSpan.textContent = "R$ 0,00 (Erro na Lona)";
+                    resultDetailsDiv.innerHTML = "Erro: Lona selecionada não encontrada nos preços.";
+                    console.error("Lona selecionada não encontrada nos preços da configuração atual.");
+                    return;
+                }
+
+                if (tipoToldoSelecionado === 'cortina') {
+                    resultadoCalculo = calcularPrecoCortina(largura, medidaSecundaria, precoM2Lona);
+                } else if (tipoToldoSelecionado === 'capota') {
+                    resultadoCalculo = calcularPrecoCapota(largura, medidaSecundaria, precoM2Lona);
+                }
+                custoTotal = resultadoCalculo.precoLona + resultadoCalculo.precoCostura;
             }
-
-            const marcaLonaAtualString = marcaLonaSelect.value;
-            // Pega o valor numérico da lona da string "Marca: R$ XX.YY"
-            const precoM2Lona = currentPrecosLona[marcaLonaAtualString];
-
-            if (precoM2Lona === undefined) { // Garante que a lona selecionada tem preço na config atual
-                 valorTotalSpan.textContent = "R$ 0,00 (Erro na Lona)";
-                 console.error("Lona selecionada não encontrada nos preços da configuração atual.");
-                 return;
-            }
-
-            let resultadoCalculo = { precoLona: 0, precoCostura: 0 };
-
-            if (tipoToldoSelecionado === 'cortina') {
-                resultadoCalculo = calcularPrecoCortina(largura, medidaSecundaria, precoM2Lona);
-            } else if (tipoToldoSelecionado === 'capota') {
-                resultadoCalculo = calcularPrecoCapota(largura, medidaSecundaria, precoM2Lona);
-            }
-
-            const custoTotal = resultadoCalculo.precoLona + resultadoCalculo.precoCostura;
+            
             valorTotalSpan.textContent = `R$ ${custoTotal.toFixed(2)}`;
+
+            resultDetailsDiv.innerHTML = `
+                <div class="spec-item">
+                    <strong>Pano: ${resultadoCalculo.pano.toFixed(0)}</strong>
+                </div>
+                <div class="spec-item">
+                    <strong>Metragem: ${resultadoCalculo.metragem.toFixed(2)} m²</strong>
+                </div>
+                <div class="spec-item">
+                    <strong>Preço da Lona: R$ ${resultadoCalculo.precoLona.toFixed(2)}</strong>
+                </div>
+                <div class="spec-item">
+                    <strong>Preço da Costura: R$ ${resultadoCalculo.precoCostura.toFixed(2)}</strong>
+                </div>
+            `;
         }
 
         // --- Event Listeners ---
-        marcaLonaSelect.addEventListener('change', handleLonaChange); 
+        marcaLonaSelect.addEventListener('change', handleLonaChange);
 
         tipoToldoButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -618,29 +633,23 @@
                 button.classList.add('selected');
                 tipoToldoSelecionado = button.dataset.type;
                 updateMeasureLabel();
-                handleLonaChange(); // Recarrega larguras de lona e recalcula
+                handleLonaChange();
             });
         });
 
-        // Event listeners para os novos botões de preço (Atacado/Varejo)
         precoButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Remove a classe 'selected' de todos os botões de preço
                 precoButtons.forEach(btn => btn.classList.remove('selected'));
-                // Adiciona a classe 'selected' ao botão clicado
                 button.classList.add('selected');
-                tipoPrecoSelecionado = button.dataset.priceType; // Atualiza a variável global
-                loadUserConfig(); // Recarrega todas as configurações (incluindo preços de lona)
-                handleLonaChange(); // Força recálculo com nova lona padrão e preços
+                tipoPrecoSelecionado = button.dataset.priceType;
+                loadUserConfig();
+                handleLonaChange();
             });
         });
 
-        // Event listener para os inputs de medida (largura e medidaSecundaria)
         larguraInput.addEventListener('input', calcularPreco);
         medidaSecundariaInput.addEventListener('input', calcularPreco);
 
-
-        // Inicializa o script quando a página carrega
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
