@@ -221,7 +221,7 @@
             font-size: 0.95em;
             /* Flex-basis para definir uma largura mínima, para evitar que fiquem muito estreitos */
             flex-basis: 'width'; /* 4 itens por linha, com um pouco de espaço entre eles */
-            min-width: 100px; /* Largura mínima para cada item */
+            min-width: 10px; /* Largura mínima para cada item */
         }
 
         .result-details .spec-item strong {
@@ -548,17 +548,18 @@
             const pano = Math.ceil((largura - 0.000000000000001) / LONA_PADRAO_LARGURA_CORTINA);
             let metragem = pano * (caimento + 0.10);
             let precoLona = metragem * precoM2Lona;
+            let mtrgcos = largura * caimento
 
             let precoCostura = (Math.ceil(largura) * currentConfig.CORTINA_COSTURA_M2_RATE * (caimento + 0.10));
             
             if (tipoUsuarioAtual === 'hyper') {
-                precoCostura = largura * currentConfig.CORTINA_COSTURA_M2_RATE * caimento;
+                precoCostura = largura * caimento * currentConfig.CORTINA_COSTURA_M2_RATE;
             }
             
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CORTINA) {
                 precoCostura = currentConfig.PRECO_MIN_COSTURA_CORTINA;
             }
-            return { pano, metragem, precoLona, precoCostura };
+            return { pano, metragem, precoLona, precoCostura, mtrgcos};
         }
 
         function calcularPrecoCapota(largura, perna, precoM2Lona) {
@@ -567,6 +568,7 @@
             const pano = Math.ceil((larg - 0.00000000000001) / LONA_PADRAO_LARGURA_CAPOTA);
             let metragem = pano * pern;
             let precoLona = metragem * precoM2Lona;
+            let mtrgcos = largura * 2 * perna;
 
             let precoCostura = (Math.ceil(larg)) * currentConfig.CAPOTA_COSTURA_M2_RATE * pern;
 
@@ -577,14 +579,14 @@
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CAPOTA) {
                 precoCostura = currentConfig.PRECO_MIN_COSTURA_CAPOTA;
             }
-            return { pano, metragem, precoLona, precoCostura };
+            return { pano, metragem, precoLona, precoCostura, mtrgcos }
         }
 
         function calcularPreco() {
             const largura = getNumericValue('largura');
             const medidaSecundaria = getNumericValue('medidaSecundaria');
 
-            let resultadoCalculo = { pano: 0, metragem: 0, precoLona: 0, precoCostura: 0 };
+            let resultadoCalculo = { pano: 0, metragem: 0, precoLona: 0, precoCostura: 0, mtrgcos: 0,};
             let custoTotal = 0;
 
             if (largura > 0 && medidaSecundaria > 0) {
@@ -613,14 +615,18 @@
                     <strong>Pano: ${resultadoCalculo.pano.toFixed(0)}</strong>
                 </div>
                 <div class="spec-item">
-                    <strong>Metragem: ${resultadoCalculo.metragem.toFixed(2)} m²</strong>
+                    <strong>Mtrg(Lona): ${resultadoCalculo.metragem.toFixed(2)} m²</strong>
                 </div>
                 <div class="spec-item">
-                    <strong>Preço da Lona: R$ ${resultadoCalculo.precoLona.toFixed(2)}</strong>
+                    <strong>Mtrg(Cos): ${resultadoCalculo.mtrgcos.toFixed(2)} m²</strong>
                 </div>
                 <div class="spec-item">
-                    <strong>Preço da Costura: R$ ${resultadoCalculo.precoCostura.toFixed(2)}</strong>
+                    <strong>Prç(Lona): R$ ${resultadoCalculo.precoLona.toFixed(2)}</strong>
                 </div>
+                <div class="spec-item">
+                    <strong>Prç(cos): R$ ${resultadoCalculo.precoCostura.toFixed(2)}</strong>
+                </div>
+                
             `;
         }
 
