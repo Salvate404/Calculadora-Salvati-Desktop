@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora</title>
+    <title>Calculadora - Hiper</title>
     <link rel="icon" type="image/png" href="imgfavicon.png">
 
     <script>
         // --- LÓGICA DE VERIFICAÇÃO DE TIPO DE USUÁRIO (SEM CONTROLE DE SESSÃO POR TEMPO) ---
         const tipoUsuario = localStorage.getItem('tipoUsuario'); // Pega o tipo de usuário
 
-        if (!tipoUsuario) {
-            // Se o tipo de usuário não existir no localStorage, redireciona para o login
-            console.log("Tipo de usuário ausente. Redirecionando para login.");
+        if (tipoUsuario !== 'hiper') { // Verifica se é o tipo correto para este arquivo
+            console.log("Tipo de usuário incorreto. Redirecionando para login.");
             localStorage.removeItem('usuarioLogado'); // Garante que flags antigas sejam limpas
             localStorage.removeItem('tempoLogin');
             localStorage.removeItem('tipoUsuario'); // Garante limpeza completa do tipo de usuário
@@ -57,12 +56,8 @@
 
             /* --- ANIMAÇÃO DE ENTRADA (FADE-IN COM LEVE ZOOM) --- */
             opacity: 0;
-            transform: scale(1.05);
-            animation: fadeZoomIn 0.5s ease-out forwards;
-        }
-
-        #tipoPrecoSection {
-            display: none;
+            transform: scale(5.00);
+            animation: fadeZoomIn 1.0s ease-out forwards;
         }
 
         @keyframes fadeZoomIn {
@@ -210,7 +205,7 @@
             display: flex;
             justify-content: space-around; /* Distribui o espaço entre os itens */
             flex-wrap: wrap; /* Permite que os itens quebrem a linha se não houver espaço */
-            gap: 'row-gap'; /* Espaço entre os itens */
+            gap: 10px; /* Espaço entre os itens */
         }
 
         .result-details .spec-item {
@@ -372,7 +367,7 @@
         const medidaSecundariaLabel = document.getElementById('medidaSecundariaLabel');
         const tipoToldoButtons = document.querySelectorAll('.option-buttons button[data-type]');
         const marcaLonaSelect = document.getElementById('marcaLona');
-        const priceListDiv = document.getElementById('priceList');
+        const priceListDiv = document.getElementById('priceList'); // Não usado, pode ser removido
         const valorTotalSpan = document.getElementById('valorTotal');
         const userTypeDisplay = document.getElementById('userTypeDisplay');
         const resultDetailsDiv = document.getElementById('resultDetails');
@@ -393,19 +388,20 @@
 
         // --- Estrutura de configurações para cada tipo de usuário/preço ---
         const CONFIGURACOES_USUARIO = {
-            'ge_finance': {
+            'hiper': {
                 'atacado': {
                     PRECOS_LONA: {
                         "Sansuy: R$ 35,70": 35.70,
+                        "Lowick: R$ 31,50": 31.50,
                         "Night&day: R$ 30,00": 30.00,
-                        "Lowick: R$ 30,00": 30.00,
                         "SL: R$ 27,05": 27.05,
-                        "Slim: R$ 22,30": 22.30,
-                        "TD60: R$ 22,30": 22.30
+                        "Cristal: R$ 26,24": 26.24,
+                        "Slim: R$ 22,16": 22.16,
+                        "TD60: R$ 18,00": 18.00
                     },
-                    CORTINA_COSTURA_M2_RATE: 4.50,
-                    CAPOTA_COSTURA_M2_RATE: 7.80,
-                    PRECO_MIN_COSTURA_CORTINA: 45.00,
+                    CORTINA_COSTURA_M2_RATE: 6.00,
+                    CAPOTA_COSTURA_M2_RATE: 15.50,
+                    PRECO_MIN_COSTURA_CORTINA: 37.50,
                     PRECO_MIN_COSTURA_CAPOTA: 45.00,
                     LARGURA_PADRAO_LONA_GERAL: 1.40,
                     LARGURA_PADRAO_LONA_SANSUY: 1.45
@@ -413,33 +409,16 @@
                 'varejo': {
                     PRECOS_LONA: {
                         "Sansuy: R$ 42,50": 42.50,
-                        "Night&day: R$ 35,00": 35.00,
                         "Lowick: R$ 30,00": 30.00,
+                        "Night&day: R$ 35,00": 35.00,
                         "SL: R$ 29,00": 29.00,
+                        "Cristal: R$ 30,00": 30.00,
                         "Slim: R$ 23,00": 23.00,
                         "TD60: R$ 23,00": 23.00
                     },
                     CORTINA_COSTURA_M2_RATE: 6.00,
                     CAPOTA_COSTURA_M2_RATE: 10.00,
                     PRECO_MIN_COSTURA_CORTINA: 45.00,
-                    PRECO_MIN_COSTURA_CAPOTA: 45.00,
-                    LARGURA_PADRAO_LONA_GERAL: 1.40,
-                    LARGURA_PADRAO_LONA_SANSUY: 1.45
-                }
-            },
-            'hyper': {
-                'padrao': {
-                    PRECOS_LONA: {
-                        "Sansuy: R$ 35,70": 35.70,
-                        "Night&day: R$ 30,00": 30.00,
-                        "Lowick: R$ 31,50": 31.50,
-                        "SL: R$ 27,05": 27.05,
-                        "Slim: R$ 22,16": 22.16,
-                        "TD60: R$ 18,00": 18.00
-                    },
-                    CORTINA_COSTURA_M2_RATE: 6.00,
-                    CAPOTA_COSTURA_M2_RATE: 15.50,
-                    PRECO_MIN_COSTURA_CORTINA: 37.50,
                     PRECO_MIN_COSTURA_CAPOTA: 45.00,
                     LARGURA_PADRAO_LONA_GERAL: 1.40,
                     LARGURA_PADRAO_LONA_SANSUY: 1.45
@@ -454,16 +433,12 @@
         function loadUserConfig() {
             const lonaAnteriormenteSelecionada = marcaLonaSelect.value;
             
-            if (tipoUsuarioAtual === 'hyper') {
-                tipoPrecoSelecionado = 'padrao';
-                tipoPrecoSection.style.display = 'none';
-                userTypeDisplay.textContent = 'vsHyper';
-            } else if (tipoUsuarioAtual === 'ge_finance') {
+            if (tipoUsuarioAtual === 'hiper') {
                 tipoPrecoSection.style.display = 'block';
-                userTypeDisplay.textContent = 'vsGeFinance';
+                userTypeDisplay.textContent = 'vsHiper';
                 
                 if (!tipoPrecoSelecionado) {
-                    tipoPrecoSelecionado = 'atacado';
+                    tipoPrecoSelecionado = 'atacado'; // Garante um valor padrão
                 }
                 
                 precoButtons.forEach(btn => btn.classList.remove('selected'));
@@ -473,7 +448,7 @@
                 }
 
             } else {
-                console.warn("Tipo de usuário não reconhecido ou ausente após carregamento. Redirecionando para login.");
+                console.warn("Tipo de usuário incorreto para este arquivo. Redirecionando para login.");
                 localStorage.removeItem('tipoUsuario');
                 window.location.href = 'login.html';
                 return;
@@ -531,7 +506,7 @@
         function init() {
             loadUserConfig();
             updateMeasureLabel();
-            handleLonaChange();
+            handleLonaChange(); // Chama para garantir que a largura da lona e o cálculo inicial estejam corretos
         }
 
         function updateMeasureLabel() {
@@ -550,11 +525,7 @@
             let precoLona = metragem * precoM2Lona;
             let mtrgcos = largura * caimento
 
-            let precoCostura = (Math.ceil(largura) * currentConfig.CORTINA_COSTURA_M2_RATE * (caimento + 0.10));
-            
-            if (tipoUsuarioAtual === 'hyper') {
-                precoCostura = largura * caimento * currentConfig.CORTINA_COSTURA_M2_RATE;
-            }
+            let precoCostura = largura * caimento * currentConfig.CORTINA_COSTURA_M2_RATE; // Lógica específica para hyper
             
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CORTINA) {
                 precoCostura = currentConfig.PRECO_MIN_COSTURA_CORTINA;
@@ -570,11 +541,7 @@
             let precoLona = metragem * precoM2Lona;
             let mtrgcos = largura * 2 * perna;
 
-            let precoCostura = (Math.ceil(larg)) * currentConfig.CAPOTA_COSTURA_M2_RATE * pern;
-
-            if (tipoUsuarioAtual === 'hyper') {
-                precoCostura = larg * currentConfig.CAPOTA_COSTURA_M2_RATE;
-            }
+            let precoCostura = larg * currentConfig.CAPOTA_COSTURA_M2_RATE; // Lógica específica para hyper
 
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CAPOTA) {
                 precoCostura = currentConfig.PRECO_MIN_COSTURA_CAPOTA;
@@ -639,7 +606,7 @@
                 button.classList.add('selected');
                 tipoToldoSelecionado = button.dataset.type;
                 updateMeasureLabel();
-                handleLonaChange();
+                handleLonaChange(); // Recalcula com a nova largura padrão da lona, se aplicável
             });
         });
 
@@ -648,14 +615,16 @@
                 precoButtons.forEach(btn => btn.classList.remove('selected'));
                 button.classList.add('selected');
                 tipoPrecoSelecionado = button.dataset.priceType;
-                loadUserConfig();
-                handleLonaChange();
+                loadUserConfig(); // Recarrega configurações (incluindo preços da lona)
+                handleLonaChange(); // Recalcula
             });
         });
 
+        // Adiciona event listeners para os inputs para recalcular ao digitar
         larguraInput.addEventListener('input', calcularPreco);
         medidaSecundariaInput.addEventListener('input', calcularPreco);
 
+        // Inicializa a calculadora quando o DOM estiver completamente carregado
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
