@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title> <link rel="icon" type="image/png" href="imgfavicon.png">
+    <title>Login</title>
+    <link rel="icon" type="image/png" href="imgfavicon.png">
     
     <style>
         /* --- ESTILOS CSS EMBUTIDOS (Copiados do seu site principal) --- */
@@ -18,32 +19,50 @@
             box-sizing: border-box;
             color: #000000;
 
-            /* --- INÍCIO DAS ALTERAÇÕES PARA A IMAGEM DE FUNDO DA TELA --- */
-            background-image: url(imgsalvati.png); /* <-- SUBSTITUA ESTE CAMINHO PELA SUA IMAGEM */
-            background-size: cover; /* Faz a imagem cobrir toda a área, cortando se necessário */
-            background-position: center center; /* Centraliza a imagem */
-            background-repeat: no-repeat; /* Evita que a imagem se repita */
-            background-attachment: fixed; /* Fixa a imagem, para que ela não role com o conteúdo */
-            /* Se a imagem for muito escura ou muito clara, adicione um overlay para melhorar a legibilidade do conteúdo */
-            /* background-color: rgba(0, 0, 0, 0.3); /* Exemplo de overlay escuro semi-transparente */
-            /* background-blend-mode: overlay; /* Mistura a cor de fundo com a imagem */
-            /* --- FIM DAS ALTERAÇÕES --- */
+            /* --- IMAGEM DE FUNDO DA TELA --- */
+            background-image: url(imgsalvati.png);
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
 
-            /* --- ALTERAÇÕES PARA REMOVER ROLAGEM VERTICAL --- */
-            overflow: hidden; /* Esconde qualquer conteúdo que exceda as dimensões da tela */
+            /* --- REMOVER ROLAGEM VERTICAL --- */
+            overflow: hidden;
+
+            /* --- ANIMAÇÃO DE ENTRADA (AO CARREGAR A PÁGINA) --- */
+            /* Removido o transform: scale(5.00) que causava um zoom inicial muito grande */
+            opacity: 0;
+            transform: scale(1.05); /* Começa ligeiramente ampliado */
+            animation: fadeZoomIn 1.0s ease-out forwards; /* Duração 1s para entrada */
         }
 
+        @keyframes fadeZoomIn {
+            from { opacity: 0; transform: scale(1.05); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- ANIMAÇÃO DE SAÍDA (QUANDO CLICAR NO BOTÃO PARA SAIR) --- */
+        body.fade-zoom-out {
+            /* A animação fadeZoomOut será acionada quando a classe for adicionada */
+            animation: fadeZoomOut 0.55s ease-in forwards; /* Duração 0.55s para saída, combine com JS setTimeout */
+        }
+
+        @keyframes fadeZoomOut {
+            /* Para uma saída, a opacidade deve ir de 1 para 0 e o zoom de 1 para um valor menor */
+            from { opacity: 1; transform: scale(1); } 
+            to { opacity: 0; transform: scale(0.95); } /* Diminui ligeiramente ao sumir */
+        }
+        
         .container {
-            background-color: #ffffff; /* Fundo branco para o seu conteúdo */
+            background-color: #ffffff;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
             text-align: center;
-            /* --- ALTERAÇÕES PARA REMOVER ROLAGEM VERTICAL --- */
-            max-height: calc(100vh - 40px); /* Garante que o container não exceda a altura da viewport menos o padding do body */
-            overflow-y: auto; /* Adiciona rolagem APENAS no container se o conteúdo dele exceder */
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
         }
 
         h1 {
@@ -108,7 +127,7 @@
 <body>
     <div class="container">
         <div class="header-title-wrapper">
-            <img src="imglogo.png" alt="Logo da Empresa">
+            <img src="imglogo.png" alt="Logo da Empresa"> 
         </div>
         <h1>Somente pessoas cadastradas</h1>
         <h2>a Salvati agradece</h2>
@@ -123,14 +142,19 @@
     </div>
 
     <script>
-        // Mapeia senhas a tipos de calculadora
+        // Função para adicionar a classe de animação de saída e redirecionar
+        function addExitAnimationAndRedirect(urlDestino) {
+            document.body.classList.add('fade-zoom-out'); // Adiciona a classe de SAÍDA
+            // Espera a animação terminar antes de redirecionar
+            setTimeout(() => {
+                window.location.href = urlDestino;
+            }, 500); // Duração do setTimeout DEVE ser igual ou maior que a duração da animação CSS
+        }
+
+        // Mapeia senhas a tipos de calculadora e seus respectivos arquivos
         const usuarios = {
-            "3319": "ge_finance",
-            "2930": "ge_finance",
-            "566" : "ge_finance",
-            "7686": "hyper",
-            "567" : "hyper",
-            "007" : "ge_finance"
+            "3319": "hiper_calculator.html",
+            "7686": "hiper_calculator.html"
         };
 
         const loginForm = document.getElementById('loginForm');
@@ -141,16 +165,27 @@
             event.preventDefault();
 
             const senhaDigitada = senhaInput.value;
-            const tipoUsuario = usuarios[senhaDigitada]; // Pega o tipo de usuário associado à senha
+            const arquivoDestino = usuarios[senhaDigitada];
+            
+            // Determina o tipo de usuário para salvar no localStorage
+            let tipoUsuarioParaSalvar;
+            if (arquivoDestino === "hiper_calculator.html") {
+                tipoUsuarioParaSalvar = "hiper";
+            } else if (arquivoDestino === "") { // para adicionar outros caso queira
+                tipoUsuarioParaSalvar = "";
+            } else {
+                tipoUsuarioParaSalvar = ""; // Caso padrão ou erro
+            }
 
-            if (tipoUsuario) { // Verifica se a senha existe no nosso mapa de usuários
-                localStorage.setItem('tipoUsuario', tipoUsuario); // SALVA APENAS O TIPO DE USUÁRIO
+            if (arquivoDestino) {
+                localStorage.setItem('tipoUsuario', tipoUsuarioParaSalvar);
                 
-                // Remove quaisquer flags antigas de login e tempo, caso existam de uma versão anterior
+                // Removendo flags antigas de login, caso existam
                 localStorage.removeItem('usuarioLogado');
                 localStorage.removeItem('tempoLogin');
 
-                window.location.href = 'index.html';
+                // CHAMA A FUNÇÃO DE ANIMAÇÃO E REDIRECIONAMENTO AQUI
+                addExitAnimationAndRedirect(arquivoDestino); 
             } else {
                 mensagemErro.textContent = "Senha incorreta. Tente novamente.";
                 mensagemErro.style.display = 'block';
