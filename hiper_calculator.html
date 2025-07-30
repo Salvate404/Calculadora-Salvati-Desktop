@@ -539,7 +539,7 @@
             const pano = Math.ceil((larg - 0.00000000000001) / LONA_PADRAO_LARGURA_CAPOTA);
             let metragem = pano * pern;
             let precoLona = metragem * precoM2Lona;
-            let mtrgcos = largura * 2 * perna;
+            let mtrgcos = largura + (2 * perna);
 
             let precoCostura = larg * currentConfig.CAPOTA_COSTURA_M2_RATE; // Lógica específica para hyper
 
