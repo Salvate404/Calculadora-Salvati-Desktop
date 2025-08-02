@@ -12,19 +12,21 @@
 
         if (tipoUsuario !== 'hiper') { // Verifica se é o tipo correto para este arquivo
             console.log("Tipo de usuário incorreto. Redirecionando para login.");
-            localStorage.removeItem('usuarioLogado'); // Garante que flags antigas sejam limpas
+            localStorage.removeItem('usuarioLogado');
             localStorage.removeItem('tempoLogin');
-            localStorage.removeItem('tipoUsuario'); // Garante limpeza completa do tipo de usuário
-            window.location.href = 'login.html';
+            localStorage.removeItem('tipoUsuario');
+            window.location.href = 'login.html'; // Permanece indo para login.html aqui
         }
 
-        // Função para adicionar a classe de animação de saída antes de redirecionar
-        function addExitAnimationAndRedirect() {
+        // MUDANÇA AQUI: A função agora aceita um parâmetro 'urlDestino'
+        function addExitAnimationAndRedirect(urlDestino) {
             document.body.classList.add('fade-zoom-out');
             // Espera a animação terminar antes de redirecionar
             setTimeout(() => {
-                localStorage.removeItem('tipoUsuario'); // Limpa o login ANTES de redirecionar
-                window.location.href = 'login.html';
+                localStorage.removeItem('tipoUsuario'); // Limpa o tipo de usuário ao deslogar
+                localStorage.removeItem('usuarioLogado'); // Boas práticas: limpa tudo relacionado ao login
+                localStorage.removeItem('tempoLogin'); // Boas práticas: limpa tudo relacionado ao login
+                window.location.href = 'menu.html'; // <--- USA O PARÂMETRO urlDestino
             }, 500); // Duração da animação (0.5s)
         }
     </script>
@@ -127,9 +129,14 @@
             margin-bottom: 0;
         }
 
-        .input-group, .select-group, .result-area {
+        .input-group, .select-group {
             margin-bottom: 20px;
             text-align: left;
+        }
+
+        .result-area {
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         label {
@@ -289,7 +296,6 @@
         </div>
 
         <div class="select-group">
-            <label>Tipo de Toldo:</label>
             <div class="option-buttons">
                 <button id="btnCortina" data-type="cortina" class="selected">
                     Cortina
@@ -301,7 +307,6 @@
         </div>
 
         <div id="tipoPrecoSection" class="select-group">
-            <label>Preço:</label>
             <div class="option-buttons">
                 <button id="btnAtacado" data-price-type="atacado" class="selected">
                     Atacado
@@ -312,7 +317,7 @@
             </div>
         </div>
         <div class="select-group">
-            <label for="marcaLona">Marca da Lona:</label>
+            <label for="marcaLona"></label>
             <select id="marcaLona"></select>
             <div id="priceList" class="price-list"></div>
         </div>
@@ -325,7 +330,7 @@
         </div>
     </div>
 
-    <a href="#" id="logoutButton" onclick="event.preventDefault(); addExitAnimationAndRedirect();">Deslogar</a>
+    <a href="#" id="logoutButton" onclick="event.preventDefault(); addExitAnimationAndRedirect();">menu</a>
     <span id="userTypeDisplay"></span>
 
 
