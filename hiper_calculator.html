@@ -297,6 +297,11 @@
 
         <div class="select-group">
             <div class="option-buttons">
+                <button id="btnCompleto" data-type="completo">
+                    Completo
+                </button>
+            </div>
+            <div class="option-buttons">
                 <button id="btnCortina" data-type="cortina" class="selected">
                     Cortina
                 </button>
@@ -376,6 +381,9 @@
         const valorTotalSpan = document.getElementById('valorTotal');
         const userTypeDisplay = document.getElementById('userTypeDisplay');
         const resultDetailsDiv = document.getElementById('resultDetails');
+        const tipoCompletoButton = document.getElementById('btnCompleto');
+        const tipoCortinaButton = document.getElementById('btnCortina');
+        const tipoCapotaButton = document.getElementById('btnCapota');
 
         const tipoPrecoSection = document.getElementById('tipoPrecoSection');
         const precoButtons = document.querySelectorAll('#tipoPrecoSection .option-buttons button');
@@ -385,8 +393,9 @@
         console.log(`Calculadora carregada para o usuário do tipo: ${tipoUsuarioAtual}`);
 
         // --- Variáveis de estado global ---
-        let tipoToldoSelecionado = 'cortina';
+        let tipoToldoSelecionado = 'cortina'; // Corrigido para começar com 'cortina'
         let tipoPrecoSelecionado = 'atacado';
+        let isCompletoSelecionado = false;
 
         let LONA_PADRAO_LARGURA_CORTINA = 1.40;
         let LONA_PADRAO_LARGURA_CAPOTA = 1.40;
@@ -431,6 +440,26 @@
             }
         };
 
+        const PRECOS_COMPLETO_CORTINA = {
+            "Sansuy: R$ 120,00": 120.00,
+            "Lowick: R$ 100,00": 100.00,
+            "Night&day: R$ 120,00": 120.00,
+            "SL: R$ 100,00": 100.00,
+            "Cristal: R$ 120,00": 120.00,
+            "Slim: R$ 90,00": 90.00,
+            "TD60: R$ 90,00": 90.00
+        };
+
+        const PRECOS_COMPLETO_CAPOTA = {
+            "Sansuy: R$ 500,00": 500.00,
+            "Lowick: R$ 500,00": 500.00,
+            "Night&day: R$ 500,00": 500.00,
+            "SL: R$ 500,00": 500.00,
+            "Cristal: R$ 500,00": 500.00,
+            "Slim: R$ 500,00": 500.00,
+            "TD60: R$ 500,00": 500.00
+        };
+
         let currentConfig = {};
         let currentPrecosLona = {};
 
@@ -470,9 +499,20 @@
         
         function updateLonaSelectOptions(lonaParaManterSelecionada = null) {
             marcaLonaSelect.innerHTML = '';
-            let lonaFoundAndSelected = false;
+            let precosParaExibir = {};
 
-            for (const marcaPrecoString in currentPrecosLona) {
+            if (isCompletoSelecionado) {
+                if (tipoToldoSelecionado === 'capota') {
+                    precosParaExibir = PRECOS_COMPLETO_CAPOTA;
+                } else {
+                    precosParaExibir = PRECOS_COMPLETO_CORTINA;
+                }
+            } else {
+                precosParaExibir = currentPrecosLona;
+            }
+
+            let lonaFoundAndSelected = false;
+            for (const marcaPrecoString in precosParaExibir) {
                 const option = document.createElement('option');
                 option.value = marcaPrecoString;
                 option.textContent = marcaPrecoString;
@@ -484,26 +524,26 @@
                 }
             }
             if (!lonaFoundAndSelected) {
-                const slLonaKey = Object.keys(currentPrecosLona).find(key => key.includes("SL:"));
+                const slLonaKey = Object.keys(precosParaExibir).find(key => key.includes("SL:"));
                 if (slLonaKey) {
                     marcaLonaSelect.value = slLonaKey;
-                } else if (Object.keys(currentPrecosLona).length > 0) {
-                    marcaLonaSelect.value = Object.keys(currentPrecosLona)[0];
+                } else if (Object.keys(precosParaExibir).length > 0) {
+                    marcaLonaSelect.value = Object.keys(precosParaExibir)[0];
                 }
             }
+            calcularPreco();
         }
 
         function handleLonaChange() {
-            LONA_PADRAO_LARGURA_CORTINA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
-            LONA_PADRAO_LARGURA_CAPOTA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
+            if (!isCompletoSelecionado) {
+                LONA_PADRAO_LARGURA_CORTINA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
+                LONA_PADRAO_LARGURA_CAPOTA = currentConfig.LARGURA_PADRAO_LONA_GERAL;
 
-            const selectedOptionText = marcaLonaSelect.options[marcaLonaSelect.selectedIndex].text;
-            if (selectedOptionText.includes("Sansuy")) {
-                LONA_PADRAO_LARGURA_CORTINA = currentConfig.LARGURA_PADRAO_LONA_SANSUY;
-                LONA_PADRAO_LARGURA_CAPOTA = currentConfig.LARGURA_PADRAO_LONA_SANSUY;
-                console.log("Lona Sansuy selecionada. Largura de lona definida para " + currentConfig.LARGURA_PADRAO_LONA_SANSUY + "m.");
-            } else {
-                console.log("Outra lona selecionada. Largura de lona redefinida para padrão do usuário (" + currentConfig.LARGURA_PADRAO_LONA_GERAL + "m).");
+                const selectedOptionText = marcaLonaSelect.options[marcaLonaSelect.selectedIndex].text;
+                if (selectedOptionText.includes("Sansuy")) {
+                    LONA_PADRAO_LARGURA_CORTINA = currentConfig.LARGURA_PADRAO_LONA_SANSUY;
+                    LONA_PADRAO_LARGURA_CAPOTA = currentConfig.LARGURA_PADRAO_LONA_SANSUY;
+                }
             }
             calcularPreco();
         }
@@ -511,7 +551,7 @@
         function init() {
             loadUserConfig();
             updateMeasureLabel();
-            handleLonaChange(); // Chama para garantir que a largura da lona e o cálculo inicial estejam corretos
+            handleLonaChange();
         }
 
         function updateMeasureLabel() {
@@ -530,7 +570,7 @@
             let precoLona = metragem * precoM2Lona;
             let mtrgcos = largura * caimento
 
-            let precoCostura = largura * caimento * currentConfig.CORTINA_COSTURA_M2_RATE; // Lógica específica para hyper
+            let precoCostura = largura * caimento * currentConfig.CORTINA_COSTURA_M2_RATE;
             
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CORTINA) {
                 precoCostura = currentConfig.PRECO_MIN_COSTURA_CORTINA;
@@ -546,7 +586,7 @@
             let precoLona = metragem * precoM2Lona;
             let mtrgcos = largura + (2 * perna);
 
-            let precoCostura = larg * currentConfig.CAPOTA_COSTURA_M2_RATE; // Lógica específica para hyper
+            let precoCostura = larg * currentConfig.CAPOTA_COSTURA_M2_RATE;
 
             if (precoCostura < currentConfig.PRECO_MIN_COSTURA_CAPOTA) {
                 precoCostura = currentConfig.PRECO_MIN_COSTURA_CAPOTA;
@@ -558,26 +598,50 @@
             const largura = getNumericValue('largura');
             const medidaSecundaria = getNumericValue('medidaSecundaria');
 
-            let resultadoCalculo = { pano: 0, metragem: 0, precoLona: 0, precoCostura: 0, mtrgcos: 0,};
             let custoTotal = 0;
-
+            let resultadoCalculo = { pano: 0, metragem: 0, precoLona: 0, precoCostura: 0, mtrgcos: 0 };
+            
+            // Verifica se há alguma medida válida
             if (largura > 0 && medidaSecundaria > 0) {
                 const marcaLonaAtualString = marcaLonaSelect.value;
-                const precoM2Lona = currentPrecosLona[marcaLonaAtualString];
+                
+                if (isCompletoSelecionado) {
+                    let precoLonaBase = 0;
+                    
+                    if (tipoToldoSelecionado === 'cortina') {
+                         precoLonaBase = PRECOS_COMPLETO_CORTINA[marcaLonaAtualString];
+                         custoTotal = largura * medidaSecundaria * precoLonaBase;
+                    } else if (tipoToldoSelecionado === 'capota') {
+                        precoLonaBase = PRECOS_COMPLETO_CAPOTA[marcaLonaAtualString];
+                        custoTotal = largura * precoLonaBase;
+                    }
 
-                if (precoM2Lona === undefined) {
-                    valorTotalSpan.textContent = "R$ 0,00 (Erro na Lona)";
-                    resultDetailsDiv.innerHTML = "Erro: Lona selecionada não encontrada nos preços.";
-                    console.error("Lona selecionada não encontrada nos preços da configuração atual.");
-                    return;
-                }
+                    // Aplica o valor mínimo de 650
+                    custoTotal = Math.max(custoTotal, 650);
 
-                if (tipoToldoSelecionado === 'cortina') {
-                    resultadoCalculo = calcularPrecoCortina(largura, medidaSecundaria, precoM2Lona);
-                } else if (tipoToldoSelecionado === 'capota') {
-                    resultadoCalculo = calcularPrecoCapota(largura, medidaSecundaria, precoM2Lona);
+                    // Preenche o objeto de resultados para exibição
+                    resultadoCalculo.precoLona = custoTotal;
+                    resultadoCalculo.precoCostura = 0;
+                    resultadoCalculo.metragem = tipoToldoSelecionado === 'cortina' ? largura * medidaSecundaria : largura;
+                    resultadoCalculo.mtrgcos = tipoToldoSelecionado === 'cortina' ? largura * medidaSecundaria : largura;
+
+                } else { // Cálculo padrão
+                    const precoM2Lona = currentPrecosLona[marcaLonaAtualString];
+
+                    if (precoM2Lona === undefined) {
+                        valorTotalSpan.textContent = "R$ 0,00 (Erro na Lona)";
+                        resultDetailsDiv.innerHTML = "Erro: Lona selecionada não encontrada nos preços.";
+                        console.error("Lona selecionada não encontrada nos preços da configuração atual.");
+                        return;
+                    }
+
+                    if (tipoToldoSelecionado === 'cortina') {
+                        resultadoCalculo = calcularPrecoCortina(largura, medidaSecundaria, precoM2Lona);
+                    } else if (tipoToldoSelecionado === 'capota') {
+                        resultadoCalculo = calcularPrecoCapota(largura, medidaSecundaria, precoM2Lona);
+                    }
+                    custoTotal = resultadoCalculo.precoLona + resultadoCalculo.precoCostura;
                 }
-                custoTotal = resultadoCalculo.precoLona + resultadoCalculo.precoCostura;
             }
             
             valorTotalSpan.textContent = `R$ ${custoTotal.toFixed(2)}`;
@@ -601,18 +665,40 @@
                 
             `;
         }
+        
+        function handleToldoClick(event) {
+            const clickedButton = event.currentTarget;
+            const dataType = clickedButton.dataset.type;
+            
+            if (dataType === 'completo') {
+                isCompletoSelecionado = !isCompletoSelecionado;
+                clickedButton.classList.toggle('selected', isCompletoSelecionado);
+            } else { // Clicou em Cortina ou Capota
+                if (isCompletoSelecionado) {
+                    // Se o modo 'Completo' está ativo, apenas alterna entre Cortina e Capota
+                    tipoCortinaButton.classList.remove('selected');
+                    tipoCapotaButton.classList.remove('selected');
+                    clickedButton.classList.add('selected');
+                    tipoToldoSelecionado = dataType;
+                } else {
+                    // Se o modo 'Completo' NÃO está ativo, funciona como antes (seleção exclusiva)
+                    tipoCortinaButton.classList.remove('selected');
+                    tipoCapotaButton.classList.remove('selected');
+                    tipoCompletoButton.classList.remove('selected');
+                    clickedButton.classList.add('selected');
+                    tipoToldoSelecionado = dataType;
+                }
+            }
+
+            updateLonaSelectOptions();
+            updateMeasureLabel();
+        }
 
         // --- Event Listeners ---
         marcaLonaSelect.addEventListener('change', handleLonaChange);
 
         tipoToldoButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                tipoToldoButtons.forEach(btn => btn.classList.remove('selected'));
-                button.classList.add('selected');
-                tipoToldoSelecionado = button.dataset.type;
-                updateMeasureLabel();
-                handleLonaChange(); // Recalcula com a nova largura padrão da lona, se aplicável
-            });
+            button.addEventListener('click', handleToldoClick);
         });
 
         precoButtons.forEach(button => {
@@ -620,8 +706,8 @@
                 precoButtons.forEach(btn => btn.classList.remove('selected'));
                 button.classList.add('selected');
                 tipoPrecoSelecionado = button.dataset.priceType;
-                loadUserConfig(); // Recarrega configurações (incluindo preços da lona)
-                handleLonaChange(); // Recalcula
+                loadUserConfig();
+                handleLonaChange();
             });
         });
 
@@ -634,4 +720,3 @@
     </script>
 </body>
 </html>
-
