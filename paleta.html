@@ -7,15 +7,25 @@
     <link rel="icon" type="image/png" href="imgfavicon.png">
 
     <script>
-        // --- FUNÇÃO DE ANIMAÇÃO DE SAÍDA ---
-        function addExitAnimationAndRedirect(urlDestino) {
+        // Função para redirecionar com animação de saída.
+        // MANTÉM OS DADOS DE LOGIN.
+        function redirectTo(urlDestino) {
+            document.body.classList.add('fade-zoom-out');
+            setTimeout(() => {
+                window.location.href = urlDestino;
+            }, 500);
+        }
+
+        // Função para deslogar e voltar ao menu.
+        // APAGA OS DADOS DE LOGIN.
+        function logoutAndRedirect() {
             document.body.classList.add('fade-zoom-out');
             setTimeout(() => {
                 localStorage.removeItem('tipoUsuario');
                 localStorage.removeItem('usuarioLogado');
                 localStorage.removeItem('tempoLogin');
                 window.location.href = 'menu.html';
-            }, 500); // Duração da animação (0.5s)
+            }, 500);
         }
     </script>
 
@@ -70,7 +80,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 800px;
+            max-width: 650px;
             text-align: center;
             max-height: calc(100vh - 40px);
             overflow-y: auto;
@@ -112,17 +122,18 @@
         .button-group {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border: 1px solid #ddd;
+            align-items: left;
+            gap: 10px;
+            padding: 5px;
+            border: 1px solid #ffffff;
             border-radius: 8px;
-            background-color: #f8f9fa;
+            background-color: #ffffff;
         }
 
         .button-group button {
             flex: 1;
             background-color: #007bff;
+            text-align: left;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -192,33 +203,33 @@
 
         <div class="button-section">
             <div class="button-group">
-                <button>Sansuy</button>
-                <a class="download-link" href="paleta-sansuy.pdf" download="paleta_sansuy.pdf">Baixar PDF</a>
+                <button onclick="redirectTo('sansuy.html')">Sansuy</button>
+                <a class="download-link" href="PDF/paleta-sansuy.pdf" download="paleta_sansuy.pdf">Baixar PDF</a>
             </div>
 
             <div class="button-group">
-                <button>Night&Day</button>
-                <a class="download-link" href="paleta-nightday.pdf" download="paleta_nightday.pdf">Baixar PDF</a>
+                <button onclick="redirectTo('nightday.html')">Night&Day</button>
+                <a class="download-link" href="PDF/paleta-nightday.pdf" download="paleta_nightday.pdf">Baixar PDF</a>
             </div>
 
             <div class="button-group">
-                <button>SL</button>
-                <a class="download-link" href="paleta-sl.pdf" download="paleta_sl.pdf">Baixar PDF</a>
+                <button onclick="redirectTo('sl.html')">SL</button>
+                <a class="download-link" href="PDF/paleta-sl.pdf" download="paleta_sl.pdf">Baixar PDF</a>
             </div>
             
             <div class="button-group">
-                <button>Slim</button>
-                <a class="download-link" href="paleta-slim.pdf" download="paleta_slim.pdf">Baixar PDF</a>
+                <button onclick="redirectTo('slim.html')">Slim</button>
+                <a class="download-link" href="PDF/paleta-slim.pdf" download="paleta_slim.pdf">Baixar PDF</a>
             </div>
             
             <div class="button-group">
-                <button>TD60</button>
-                <a class="download-link" href="paleta-td60.pdf" download="paleta_td60.pdf">Baixar PDF</a>
+                <button onclick="redirectTo('td60.html')">TD60</button>
+                <a class="download-link" href="PDF/paleta-td60.pdf" download="paleta_td60.pdf">Baixar PDF</a>
             </div>
         </div>
     </div>
 
-    <a href="#" id="logoutButton" onclick="event.preventDefault(); addExitAnimationAndRedirect();">menu</a>
+    <a href="#" id="logoutButton" onclick="event.preventDefault(); logoutAndRedirect();">menu</a>
     <span id="userTypeDisplay"></span>
 
 </body>
