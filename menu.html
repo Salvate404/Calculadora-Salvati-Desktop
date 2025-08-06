@@ -17,22 +17,16 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            color: #333; /* Cor do texto padrão */
-
-            /* --- IMAGEM DE FUNDO DA TELA --- */
-            background-image: url(imgsalvati.png); /* Certifique-se de que o caminho está correto */
+            color: #333;
+            background-image: url(imgsalvati.png);
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-
-            /* --- REMOVER ROLAGEM VERTICAL DO BODY --- */
             overflow: hidden;
             position: relative;
-
-            /* --- ANIMAÇÃO DE ENTRADA (FADE-IN COM LEVE ZOOM) --- */
             opacity: 0;
-            transform: scale(1.05); /* Ajustado para um zoom inicial sutil */
+            transform: scale(1.05);
             animation: fadeZoomIn 1.0s ease-out forwards;
         }
 
@@ -41,9 +35,8 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* --- ANIMAÇÃO DE SAÍDA (FADE-OUT COM LEVE ZOOM) --- */
         body.fade-zoom-out {
-            animation: fadeZoomOut 0.55s ease-in forwards; /* Duração 0.55s para saída */
+            animation: fadeZoomOut 0.55s ease-in forwards;
         }
 
         @keyframes fadeZoomOut {
@@ -57,8 +50,9 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px; /* Largura ajustada para o menu */
+            max-width: 600px;
             text-align: center;
+            /* A altura máxima do contêiner principal já estava correta */
             max-height: calc(100vh - 40px);
             overflow-y: auto;
             box-sizing: border-box;
@@ -82,7 +76,7 @@
 
         .header-title-wrapper h1 {
             color: #000000;
-            font-size: 2.2em; /* Um pouco maior para o título do menu */
+            font-size: 2.2em;
             margin: 0;
             padding: 0;
             line-height: 1.2;
@@ -96,21 +90,75 @@
             margin-bottom: 20px;
         }
 
+        .search-container {
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-container input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        
+        .search-container .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            pointer-events: none;
+        }
+
+        /* --- Corrigido: Agora usa max-height e não tem uma altura fixa --- */
         .menu-options {
             display: flex;
-            flex-direction: column; /* Botões um abaixo do outro */
-            gap: 20px; /* Espaço entre os botões */
+            flex-direction: column;
             margin-top: 30px;
+            /* Altura fixa removida */
+            /* max-height: 100%; */ /* O contêiner pai já gerencia o scroll, isso é opcional */
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
+
+        /* --- Animação de Zoom Out e Fade Out --- */
+        .menu-options .menu-item {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out, margin-bottom 0.3s ease-in-out;
+            overflow: hidden;
+            max-height: 100px;
+            margin-bottom: 20px;
+        }
+        
+        .menu-options .menu-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .menu-options .menu-item.hidden {
+            opacity: 0;
+            max-height: 0;
+            margin-bottom: 0;
+            transform: scale(0.8);
+            pointer-events: none;
         }
 
         .menu-options button {
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 15px 25px; /* Padding maior para botões de menu */
-            border-radius: 8px; /* Bordas mais arredondadas */
+            padding: 15px 25px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1.3em; /* Fonte maior */
+            font-size: 1.3em;
             transition: background-color 0.3s ease, transform 0.2s ease;
             width: 100%;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -118,10 +166,9 @@
 
         .menu-options button:hover {
             background-color: #0056b3;
-            transform: translateY(-2px); /* Efeito de elevação sutil */
+            transform: translateY(-2px);
         }
 
-        /* Estilo para o botão de logout, se você quiser um no menu */
         #logoutButton {
             position: absolute;
             bottom: 20px;
@@ -143,6 +190,7 @@
             background-color: #c82333;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -152,52 +200,74 @@
             <h2>Selecione o tipo de toldo para prosseguir</h2>
         </div>
         
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar no menu..." onkeyup="filterButtons()">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
         <div class="menu-options">
-            <button onclick="redirectTo('hiper_calculator.html', 'hiper')">Convencionais</button>
-            <button onclick="redirectTo('visor_calculator.html', 'visor')">Com Visor</button>
-            <button onclick="redirectTo('articulado_calculator.html', 'Articulado')">Articulado e motor</button>
-            <button onclick="redirectTo('paleta.html', 'paleta')">Paleta de cores</button>
-            <button onclick="redirectTo('produtos.html', 'produtos')">Inventário</button>
+            <div class="menu-item">
+                <button onclick="redirectTo('hiper_calculator.html', 'hiper')" data-keywords="calculadora toldo convencional simples comum cortina capota completo">Convencionais</button>
+            </div>
+            <div class="menu-item">
+                <button onclick="redirectTo('visor_calculator.html', 'visor')" data-keywords="calculadora toldo visor cristal 0,50 0.50">Com Visor</button>
+            </div>
+            <div class="menu-item">
+                <button onclick="redirectTo('articulado_calculator.html', 'Articulado')" data-keywords="calculadora toldo articulado motor economico econômico">Articulado e motor</button>
+            </div>
+            <div class="menu-item">
+                <button onclick="redirectTo('paleta.html', 'paleta')" data-keywords="cores paleta de cores catalogo cor">Paleta de cores</button>
+            </div>
+            <div class="menu-item">
+                <button onclick="redirectTo('produtos.html', 'produtos')" data-keywords="inventario estoque produtos precos preços preco preço orçamento orcamento">Inventário</button>
+            </div>
         </div>
     </div>
 
     <a href="#" id="logoutButton" onclick="event.preventDefault(); addExitAnimationAndRedirectToLogin();">Deslogar</a>
 
     <script>
-        // Função para adicionar a classe de animação de saída e redirecionar
+        function filterButtons() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const menuItems = document.querySelectorAll('.menu-options .menu-item');
+            
+            menuItems.forEach(item => {
+                const button = item.querySelector('button');
+                const buttonText = button.textContent.toLowerCase();
+                const keywords = button.getAttribute('data-keywords') ? button.getAttribute('data-keywords').toLowerCase() : '';
+                
+                const searchableText = `${buttonText} ${keywords}`;
+                
+                if (searchableText.includes(filter)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
         function addExitAnimationAndRedirect(urlDestino) {
             document.body.classList.add('fade-zoom-out');
             setTimeout(() => {
                 window.location.href = urlDestino;
-            }, 550); // Duração da animação (0.55s)
+            }, 550);
         }
 
-        // Função para os botões do menu
         function redirectTo(fileName, tipoUsuario) {
-            // Define o tipoUsuario no localStorage antes de redirecionar
             localStorage.setItem('tipoUsuario', tipoUsuario);
-            // Chama a animação de saída e redireciona
             addExitAnimationAndRedirect(fileName);
         }
 
-        // Função específica para deslogar (limpa localStorage e redireciona para login)
         function addExitAnimationAndRedirectToLogin() {
             document.body.classList.add('fade-zoom-out');
             setTimeout(() => {
-                localStorage.removeItem('tipoUsuario'); // Limpa o tipo de usuário
-                localStorage.removeItem('usuarioLogado'); // Limpa outras flags de login se houver
+                localStorage.removeItem('tipoUsuario');
+                localStorage.removeItem('usuarioLogado');
                 localStorage.removeItem('tempoLogin');
-                window.location.href = 'login.html'; // Redireciona para o login
-            }, 550); // Duração da animação (0.55s)
+                window.location.href = 'login.html';
+            }, 550);
         }
-
-        // Exemplo: Limpar localStorage quando o menu é acessado diretamente (se não for via login)
-        // Isso é opcional, dependendo do seu fluxo. Se o login SEMPRE for o ponto de entrada, não precisa.
-        // if (!localStorage.getItem('tipoUsuario')) {
-        //     localStorage.removeItem('tipoUsuario');
-        //     localStorage.removeItem('usuarioLogado');
-        //     localStorage.removeItem('tempoLogin');
-        // }
     </script>
 </body>
 </html>
