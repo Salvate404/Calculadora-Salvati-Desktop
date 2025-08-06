@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajuda do Site</title>
+    <style>
+        /* Estilo para o overlay (fundo transparente) */
+        .overlay {
+            /* Esconde o pop-up por padrão */
+            display: none;
+            /* Posição fixa sobre toda a página */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Cor e opacidade do fundo semi-transparente */
+            background-color: rgba(0, 0, 0, 0.7); /* Preto com 70% de opacidade */
+            z-index: 1000; /* Garante que o pop-up fique na frente de tudo */
+            /* Centraliza o conteúdo do pop-up */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Estilo para o conteúdo do pop-up (a caixa branca) */
+        .conteudoPopup {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 5px;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        }
+
+        /* Estilo para o botão de fechar */
+        .fechaPopup {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 25px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .fechaPopup:hover {
+            color: #555;
+        }
+
+        /* Estilo para o botão que abre a ajuda */
+        #abreAjuda {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="abreAjuda">Ajuda</button>
+
+    <div id="popupAjuda" class="overlay">
+        <div class="conteudoPopup">
+            <span class="fechaPopup">&times;</span>
+            <h2>Como podemos te ajudar?</h2>
+            <p>Seja bem-vindo à nossa página de ajuda. Aqui você encontra as respostas para as perguntas mais comuns sobre o site.</p>
+            <h3>Perguntas Frequentes</h3>
+            <ul>
+                <li>**Como faço para me cadastrar?**
+                    <br>Clique no botão "Cadastre-se" no canto superior direito da página e preencha o formulário.</li>
+                <li>**Posso alterar minhas informações?**
+                    <br>Sim, vá até "Meu Perfil" após fazer login e edite os dados que precisar.</li>
+                <li>**Onde encontro o histórico de pedidos?**
+                    <br>Na sua área logada, procure pela opção "Meus Pedidos".</li>
+            </ul>
+            <p>Se sua dúvida não foi respondida, entre em contato com nosso suporte.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('popupAjuda');
+            const abreBtn = document.getElementById('abreAjuda');
+            const fechaBtn = document.querySelector('.fechaPopup');
+            
+            // Função para fechar o pop-up
+            function fecharPopup() {
+                popup.style.display = 'none';
+            }
+
+            // Abre o pop-up ao clicar no botão "Ajuda"
+            abreBtn.addEventListener('click', function() {
+                popup.style.display = 'flex';
+            });
+
+            // Fecha o pop-up ao clicar no "X"
+            fechaBtn.addEventListener('click', fecharPopup);
+
+            // Fecha o pop-up ao clicar fora do conteúdo
+            popup.addEventListener('click', function(event) {
+                // Se o clique foi no fundo (overlay), e não na caixa branca do conteúdo
+                if (event.target === popup) {
+                    fecharPopup();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
