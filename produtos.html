@@ -5,12 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo de Produtos</title>
     <link rel="icon" type="image/png" href="imgfavicon.png">
-    
+    <link rel="stylesheet" href="carrinho.css">
     <style>
-        /* --- ESTILOS CSS EMBUTIDOS --- */
-        :root {
-            --sidebar-width: 500px;
-        }
 
         body {
             font-family: Arial, sans-serif;
@@ -155,7 +151,7 @@
             border-bottom-left-radius: 10px;
         }
 
-        th:nth-child(8) {
+        th:nth-child(7) {
             border-top-right-radius: 10px;
             border-bottom-right-radius: 10px;
         }
@@ -363,11 +359,11 @@
         }
         
         #saveCartButton {
-            background-color: #17a2b8;
+            background-color: #28a745;
         }
         
         #saveCartButton:hover {
-            background-color: #138496;
+            background-color: #218838;
         }
 
         #payment-section {
@@ -483,6 +479,27 @@
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
             text-align: center;
+        }
+
+        #saved-carts-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 40vh;
+            overflow-y: auto;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .saved-cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .saved-cart-item:last-child {
+            border-bottom: none;
         }
 
         .close-modal {
@@ -753,8 +770,8 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #ffc107;
-            color: #333;
+            background-color: #007bff;
+            color: #ffffff;
             border: none;
             padding: 10px 15px;
             border-radius: 5px;
@@ -767,7 +784,7 @@
         }
         
         #savedCartsButton:hover {
-            background-color: #e0a800;
+            background-color: #0056b3;
         }
         
         #userTypeDisplay {
@@ -819,7 +836,6 @@
                             <th>Código</th>
                             <th>Unidade</th>
                             <th>Descrição</th>
-                            <th>Preço Compra</th>
                             <th>Preço Atacado</th>
                             <th>Preço Varejo</th>
                         </tr>
@@ -958,6 +974,7 @@
         // Variáveis e elementos do DOM (antes em cart.js e catalogo.html)
         let shoppingCart = [];
         let splitPayments = [];
+        let loadedCartId = null;
         let clientData = {
             nomeCliente: '',
             tipo: 'fisica',
@@ -1108,21 +1125,56 @@
         }
 
         function clearCart() {
-            shoppingCart = [];
-            splitPayments = [];
-            clientNameInput.value = '';
-            clientData = {
-                nomeCliente: '',
-                tipo: 'fisica',
-                dadosFisica: {},
-                dadosJuridica: {}
-            };
-            renderCart();
-            showToast('Carrinho limpo com sucesso!', 'success');
+            showConfirmModal('Tem certeza que deseja limpar o carrinho atual?', (confirmed) => {
+                if (confirmed) {
+                    shoppingCart = [];
+                    splitPayments = [];
+                    clientNameInput.value = '';
+                    clientData = {
+                        nomeCliente: '',
+                        tipo: 'fisica',
+                        dadosFisica: {},
+                        dadosJuridica: {}
+                    };
+                    loadedCartId = null;
+                    document.getElementById('saveCartButton').innerText = 'Guardar Carrinho';
+                    renderCart();
+                    showToast('Carrinho limpo com sucesso!', 'success');
+                }
+            });
         }
 
         function saveCart() {
-            if (shoppingCart.length > 0) {
+            if (shoppingCart.length === 0) {
+                showToast('O carrinho está vazio e não pode ser guardado.', 'error');
+                return;
+            }
+
+            const savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || [];
+            clientData.nomeCliente = clientNameInput.value;
+            clientData.dadosFisica = getFormData('fisica');
+            clientData.dadosJuridica = getFormData('juridica');
+
+            if (loadedCartId) {
+                // Atualizar carrinho existente
+                const cartIndex = savedCarts.findIndex(cart => cart.id === loadedCartId);
+                if (cartIndex > -1) {
+                    savedCarts[cartIndex] = {
+                        id: loadedCartId,
+                        items: shoppingCart,
+                        payments: splitPayments,
+                        client: clientData,
+                        date: new Date().toLocaleString() // Atualiza a data
+                    };
+                    localStorage.setItem('savedCarts', JSON.stringify(savedCarts));
+                    showToast('Carrinho atualizado com sucesso!', 'success');
+                } else {
+                    showToast('Erro: Carrinho carregado não encontrado para atualização.', 'error');
+                    loadedCartId = null; // Reseta o ID se não encontrar
+                    saveCart(); // Tenta salvar como um novo carrinho
+                }
+            } else {
+                // Guardar novo carrinho
                 const savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || [];
                 const cartId = Date.now();
                 
@@ -1139,8 +1191,6 @@
                 });
                 localStorage.setItem('savedCarts', JSON.stringify(savedCarts));
                 showToast('Carrinho guardado com sucesso!', 'success');
-            } else {
-                showToast('O carrinho está vazio e não pode ser guardado.', 'error');
             }
         }
 
@@ -1289,11 +1339,11 @@
                     const cartItem = document.createElement('li');
                     cartItem.classList.add('saved-cart-item');
                     
-                    const clientName = (cart.client && cart.client.nomeCliente) || 'Desconhecido';
+                    const clientName = (cart.client && cart.client.nomeCliente) ? cart.client.nomeCliente : 'Desconhecido';
 
                     cartItem.innerHTML = `
                         <div class="saved-cart-info">
-                            <p>Carrinho - ${clientName}</p>
+                            <strong>${clientName}</strong>
                             <span>Guardado em: ${cart.date}</span>
                         </div>
                         <div class="saved-cart-actions">
@@ -1305,6 +1355,7 @@
             }
         }
 
+
         function loadCart(cartId) {
             const savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || [];
             const cartToLoad = savedCarts.find(cart => cart.id === cartId);
@@ -1314,6 +1365,9 @@
                 splitPayments = cartToLoad.payments || [];
                 clientData = cartToLoad.client || { nomeCliente: '', tipo: 'fisica', dadosFisica: {}, dadosJuridica: {} };
                 clientNameInput.value = clientData.nomeCliente;
+
+                loadedCartId = cartId;
+                document.getElementById('saveCartButton').innerText = 'Atualizar Carrinho';
                 
                 renderCart();
                 hideSavedCartsModal();
@@ -1322,6 +1376,31 @@
             } else {
                 showToast('Erro ao carregar o carrinho.', 'error');
             }
+        }
+
+        function deleteCart(cartId) {
+            const savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || [];
+            const cartToDelete = savedCarts.find(cart => cart.id === cartId);
+            if (!cartToDelete) return;
+
+            const clientName = (cartToDelete.client && cartToDelete.client.nomeCliente) || 'Cliente Desconhecido';
+
+            showConfirmModal(`Tem certeza que deseja excluir o carrinho de "${clientName}"?`, (confirmed) => {
+                if (confirmed) {
+                    const updatedCarts = savedCarts.filter(cart => cart.id !== cartId);
+                    localStorage.setItem('savedCarts', JSON.stringify(updatedCarts));
+                    renderSavedCartsModal();
+                    showToast('Carrinho excluído com sucesso!', 'success');
+                }
+            });
+        }
+
+        function deleteCart(cartId) {
+            const savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || [];
+            const cartToDelete = savedCarts.find(cart => cart.id === cartId);
+            if (!cartToDelete) return;
+
+            const clientName = (cartToDelete.client && cartToDelete.client.nomeCliente) || 'Cliente Desconhecido';
         }
 
         function showPasswordModal() {
@@ -1434,7 +1513,6 @@
                     <td>${product.codigo}</td>
                     <td>${product.unidade}</td>
                     <td>${product.descricao}</td>
-                    <td>R$ ${product.precoComprado.toFixed(2)}</td>
                     <td>R$ ${product.precoAtacado.toFixed(2)}</td>
                     <td>R$ ${product.precoVarejo.toFixed(2)}</td>
                 `;
@@ -1541,12 +1619,16 @@
 
         if (savedCartsList) {
             savedCartsList.addEventListener('click', (event) => {
-                const target = event.target;
+                const target = event.target.closest('button');
+                if (!target) return;
+
                 const action = target.dataset.action;
                 const id = parseInt(target.dataset.id);
                 
                 if (action === 'load-cart') {
                     loadCart(id);
+                } else if (action === 'delete-cart') {
+                    deleteCart(id);
                 }
             });
         }
