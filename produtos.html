@@ -6,6 +6,7 @@
     <title>Catálogo de Produtos</title>
     <link rel="icon" type="image/png" href="IMG/imgfavicon.png">
     <link rel="stylesheet" href="carrinho.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
 
         body {
@@ -26,7 +27,7 @@
             overflow: hidden;
             position: relative;
             opacity: 0;
-            transform: scale(5.00);
+            transform: scale(1.05);
             animation: fadeZoomIn 1.0s ease-out forwards;
         }
 
@@ -93,21 +94,41 @@
             display: block;
         }
 
-        /* --- ESTILOS DO CATÁLOGO --- */
+        /* --- ESTILOS DO CATÁLOGO --- */        
+        .search-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-container input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .search-container .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            pointer-events: none;
+        }
+
         .search-and-buy-mode {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 20px;
-        }
-        
-        #searchInput {
-            flex: 1;
-            padding: 10px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
         }
 
         #buyModeButton {
@@ -144,6 +165,24 @@
             position: sticky;
             top: 0;
             z-index: 1;
+        }
+
+        @keyframes row-fade-out {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+
+        @keyframes row-fade-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        tr.fade-out-individual {
+            animation: row-fade-out 0.2s ease-out forwards;
+        }
+        tr.fade-in-individual {
+            opacity: 0;
+            animation: row-fade-in 0.3s ease-in forwards;
         }
 
         th:nth-child(1) {
@@ -212,29 +251,41 @@
             display: flex;
         }
         
-        #close-cart-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5em;
-            cursor: pointer;
-        }
-        
         #shopping-cart-sidebar h2 {
             text-align: center;
+            position: relative;
+        }
+
+        #shopping-cart-sidebar h2 #close-cart-btn {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
         }
         
-        .client-info-container {
+        .cart-controls {
             display: flex;
+            justify-content: space-between;
             align-items: center;
             gap: 10px;
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
         }
-        
+
+        .client-info-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
         .client-info-container label {
             flex-shrink: 0;
         }
@@ -256,6 +307,21 @@
             transition: background-color 0.3s;
         }
 
+        #priceTypeToggleButton {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        #priceTypeToggleButton.atacado-active {
+            background-color: #28a745;
+        }
+
         #cart-items {
             flex-grow: 1;
             overflow-y: auto;
@@ -264,30 +330,24 @@
         
         .cart-item {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
             padding: 10px;
             background-color: #f8f9fa;
             border-radius: 5px;
         }
         
-        .cart-item-header {
+        .cart-item-info {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
+            flex-direction: column;
+            gap: 5px;
         }
         
-        .cart-item-header h4 {
+        .cart-item-info h4 {
             margin: 0;
             font-size: 1em;
             color: #007bff;
-        }
-        
-        .cart-item-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         
         .cart-item-quantity-control {
@@ -307,20 +367,6 @@
         
         .cart-item-quantity {
             font-weight: bold;
-        }
-        
-        .price-options {
-            display: flex;
-            gap: 15px;
-            font-size: 0.8em;
-            color: #555;
-        }
-        
-        .price-options label {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            cursor: pointer;
         }
         
         #cart-summary {
@@ -824,7 +870,10 @@
                 </div>
 
                 <div class="search-and-buy-mode">
-                    <input type="text" id="searchInput" placeholder="Buscar por nome ou código...">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Buscar por nome, código ou descrição...">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
                     <button id="buyModeButton">Modo Compras</button>
                 </div>
 
@@ -850,13 +899,18 @@
         </div>
         
         <div id="shopping-cart-sidebar">
-            <button id="close-cart-btn">&times;</button>
-            <h2>Meu Carrinho</h2>
+            <h2>
+                Meu Carrinho
+                <button id="close-cart-btn">&times;</button>
+            </h2>
 
-            <div class="client-info-container">
-                <label for="clientNameInput">Cliente:</label>
-                <input type="text" id="clientNameInput" placeholder="Nome do cliente">
-                <button id="clientDataBtn">Dados</button>
+            <div class="cart-controls">
+                <div class="client-info-container">
+                    <label for="clientNameInput">Cliente:</label>
+                    <input type="text" id="clientNameInput" placeholder="Nome do cliente">
+                    <button id="clientDataBtn">Dados</button>
+                </div>
+                <button id="priceTypeToggleButton">Varejo</button>
             </div>
 
             <div id="cart-items">
@@ -975,12 +1029,14 @@
         let shoppingCart = [];
         let splitPayments = [];
         let loadedCartId = null;
+        let globalPriceType = 'varejo';
         let clientData = {
             nomeCliente: '',
             tipo: 'fisica',
             dadosFisica: {},
             dadosJuridica: {}
         };
+        let lastSearchTerm = '';
         
         const itemsPerPage = 30;
         let currentPage = 1;
@@ -1013,6 +1069,7 @@
         const juridicaBtn = document.getElementById('juridicaBtn');
         const fisicaForm = document.getElementById('fisica-form');
         const juridicaForm = document.getElementById('juridica-form');
+        const priceTypeToggleButton = document.getElementById('priceTypeToggleButton');
         const deleteAllCartsBtn = document.getElementById('deleteAllCartsBtn');
         
         // Novos elementos do modal de senha
@@ -1053,7 +1110,7 @@
                 if (cartItem) {
                     cartItem.quantity++;
                 } else {
-                    shoppingCart.push({ ...product, quantity: 1, priceType: 'varejo' });
+                    shoppingCart.push({ ...product, quantity: 1 });
                 }
                 renderCart();
             }
@@ -1070,30 +1127,18 @@
                     const itemDiv = document.createElement('div');
                     itemDiv.classList.add('cart-item');
                     
-                    const price = item.priceType === 'atacado' ? item.precoAtacado : item.precoVarejo;
+                    const price = globalPriceType === 'atacado' ? item.precoAtacado : item.precoVarejo;
                     const precoTotalItem = (price * item.quantity).toFixed(2);
                     
                     itemDiv.innerHTML = `
-                        <div class="cart-item-header">
+                        <div class="cart-item-info">
                             <h4>${item.nome}</h4>
-                            <div class="cart-item-quantity-control">
-                                <button data-action="change-quantity" data-id="${item.id}" data-delta="-1">-</button>
-                                <span class="cart-item-quantity">${item.quantity}</span>
-                                <button data-action="change-quantity" data-id="${item.id}" data-delta="1">+</button>
-                            </div>
-                        </div>
-                        <div class="cart-item-details">
-                            <div class="price-options">
-                                <label>
-                                    <input type="radio" name="price-${item.id}" data-action="change-price" data-id="${item.id}" value="atacado" ${item.priceType === 'atacado' ? 'checked' : ''}>
-                                    Atacado
-                                </label>
-                                <label>
-                                    <input type="radio" name="price-${item.id}" data-action="change-price" data-id="${item.id}" value="varejo" ${item.priceType === 'varejo' ? 'checked' : ''}>
-                                    Varejo
-                                </label>
-                            </div>
                             <span>Total: R$ ${precoTotalItem}</span>
+                        </div>
+                        <div class="cart-item-quantity-control">
+                            <button data-action="change-quantity" data-id="${item.id}" data-delta="-1">-</button>
+                            <span class="cart-item-quantity">${item.quantity}</span>
+                            <button data-action="change-quantity" data-id="${item.id}" data-delta="1">+</button>
                         </div>
                     `;
                     cartItemsContainer.appendChild(itemDiv);
@@ -1116,14 +1161,6 @@
             }
         }
 
-        function changePriceType(productId, type) {
-            const cartItem = shoppingCart.find(item => item.id === productId);
-            if (cartItem) {
-                cartItem.priceType = type;
-                renderCart();
-            }
-        }
-
         function clearCart() {
             showConfirmModal('Tem certeza que deseja limpar o carrinho atual?', (confirmed) => {
                 if (confirmed) {
@@ -1136,8 +1173,10 @@
                         dadosFisica: {},
                         dadosJuridica: {}
                     };
+                    globalPriceType = 'varejo';
                     loadedCartId = null;
                     document.getElementById('saveCartButton').innerText = 'Guardar Carrinho';
+                    updatePriceToggleButton();
                     renderCart();
                     showToast('Carrinho limpo com sucesso!', 'success');
                 }
@@ -1162,6 +1201,7 @@
                     savedCarts[cartIndex] = {
                         id: loadedCartId,
                         items: shoppingCart,
+                        priceType: globalPriceType,
                         payments: splitPayments,
                         client: clientData,
                         date: new Date().toLocaleString() // Atualiza a data
@@ -1185,6 +1225,7 @@
                 savedCarts.unshift({ 
                     id: cartId, 
                     items: shoppingCart, 
+                    priceType: globalPriceType,
                     payments: splitPayments, 
                     client: clientData,
                     date: new Date().toLocaleString() 
@@ -1231,7 +1272,7 @@
 
         function getCartTotal() {
             return shoppingCart.reduce((total, item) => {
-                const price = item.priceType === 'atacado' ? item.precoAtacado : item.precoVarejo;
+                const price = globalPriceType === 'atacado' ? item.precoAtacado : item.precoVarejo;
                 return total + price * item.quantity;
             }, 0);
         }
@@ -1362,12 +1403,14 @@
             
             if (cartToLoad) {
                 shoppingCart = cartToLoad.items;
+                globalPriceType = cartToLoad.priceType || 'varejo';
                 splitPayments = cartToLoad.payments || [];
                 clientData = cartToLoad.client || { nomeCliente: '', tipo: 'fisica', dadosFisica: {}, dadosJuridica: {} };
                 clientNameInput.value = clientData.nomeCliente;
 
                 loadedCartId = cartId;
                 document.getElementById('saveCartButton').innerText = 'Atualizar Carrinho';
+                updatePriceToggleButton();
                 
                 renderCart();
                 hideSavedCartsModal();
@@ -1376,6 +1419,21 @@
             } else {
                 showToast('Erro ao carregar o carrinho.', 'error');
             }
+        }
+
+        function updatePriceToggleButton() {
+            if (globalPriceType === 'atacado') {
+                priceTypeToggleButton.textContent = 'Atacado';
+                priceTypeToggleButton.classList.add('atacado-active');
+            } else {
+                priceTypeToggleButton.textContent = 'Varejo';
+                priceTypeToggleButton.classList.remove('atacado-active');
+            }
+        }
+        function toggleGlobalPriceType() {
+            globalPriceType = (globalPriceType === 'varejo') ? 'atacado' : 'varejo';
+            updatePriceToggleButton();
+            renderCart();
         }
 
         function deleteCart(cartId) {
@@ -1493,36 +1551,71 @@
             }, 500);
         }
         
-        function displayProducts(products, page) {
-            productTableBody.innerHTML = '';
-            const startIndex = (page - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedItems = products.slice(startIndex, endIndex);
+        function displayProducts(products, page, animate = false) {
+            const tableBody = productTableBody;
 
-            if (paginatedItems.length === 0) {
-                productTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto encontrado.</td></tr>';
-                return;
+            const _populateTable = (withAnimation) => {
+                tableBody.innerHTML = ''; // Limpa a tabela
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedItems = products.slice(startIndex, endIndex);
+
+                if (paginatedItems.length === 0) {
+                    const noResultRow = tableBody.insertRow();
+                    if (withAnimation) {
+                        noResultRow.classList.add('fade-in-individual');
+                    }
+                    const cell = noResultRow.insertCell();
+                    cell.colSpan = 7; // Corrigido para 7 colunas
+                    cell.style.textAlign = 'center';
+                    cell.textContent = 'Nenhum produto encontrado.';
+                    return;
+                }
+
+                paginatedItems.forEach((product, index) => {
+                    const row = tableBody.insertRow();
+                    row.dataset.id = product.id;
+                    row.innerHTML = `
+                        <td>${product.id}</td>
+                        <td>${product.nome}</td>
+                        <td>${product.codigo}</td>
+                        <td>${product.unidade}</td>
+                        <td>${product.descricao}</td>
+                        <td>R$ ${product.precoAtacado.toFixed(2)}</td>
+                        <td>R$ ${product.precoVarejo.toFixed(2)}</td>
+                    `;
+                    if (withAnimation) {
+                        row.classList.add('fade-in-individual');
+                        row.style.animationDelay = `${index * 0.04}s`;
+                    }
+                });
+            };
+
+            if (animate) {
+                const rows = Array.from(tableBody.children);
+                if (rows.length > 0 && rows[0].cells.length > 1) {
+                    let maxDelay = 0;
+                    rows.forEach((row, index) => {
+                        const delay = index * 0.02;
+                        row.style.animationDelay = `${delay}s`;
+                        row.classList.add('fade-out-individual');
+                        if (delay > maxDelay) maxDelay = delay;
+                    });
+                    const totalAnimationTime = (maxDelay * 1000) + 200;
+                    setTimeout(() => _populateTable(true), totalAnimationTime);
+                } else {
+                    _populateTable(true);
+                }
+            } else {
+                _populateTable(false);
             }
-
-            paginatedItems.forEach(product => {
-                const row = document.createElement('tr');
-                row.dataset.id = product.id;
-                row.innerHTML = `
-                    <td>${product.id}</td>
-                    <td>${product.nome}</td>
-                    <td>${product.codigo}</td>
-                    <td>${product.unidade}</td>
-                    <td>${product.descricao}</td>
-                    <td>R$ ${product.precoAtacado.toFixed(2)}</td>
-                    <td>R$ ${product.precoVarejo.toFixed(2)}</td>
-                `;
-                productTableBody.appendChild(row);
-            });
         }
         
         function setupPagination(products) {
             paginationContainer.innerHTML = '';
             const pageCount = Math.ceil(products.length / itemsPerPage);
+            if (pageCount <= 1) return; // Não mostra paginação se houver apenas uma página
+
             for (let i = 1; i <= pageCount; i++) {
                 const btn = document.createElement('button');
                 btn.classList.add('page-button');
@@ -1532,7 +1625,7 @@
                 }
                 btn.addEventListener('click', () => {
                     currentPage = i;
-                    displayProducts(products, currentPage);
+                    displayProducts(products, currentPage, true); // Anima a troca de página
                     const currentActiveBtn = document.querySelector('.page-button.active');
                     if (currentActiveBtn) {
                         currentActiveBtn.classList.remove('active');
@@ -1543,25 +1636,40 @@
             }
         }
         
+        function normalizeString(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
         function searchProducts() {
             const searchTerm = searchInput.value.toLowerCase();
-            filteredProducts = catalogoProdutos.filter(product => 
-                product.nome.toLowerCase().includes(searchTerm) || 
-                product.codigo.toLowerCase().includes(searchTerm)
-            );
+            if (searchTerm === lastSearchTerm) {
+                return; // Evita animação desnecessária
+            }
+            lastSearchTerm = searchTerm;
+
+            const normalizedSearchTerm = normalizeString(searchTerm);
+
+            filteredProducts = catalogoProdutos.filter(product => {
+                const normalizedProductName = normalizeString(product.nome.toLowerCase());
+                const normalizedProductDesc = normalizeString(product.descricao.toLowerCase());
+                return normalizedProductName.includes(normalizedSearchTerm) || 
+                        product.codigo.toLowerCase().includes(searchTerm) ||
+                        normalizedProductDesc.includes(normalizedSearchTerm);
+            });
             currentPage = 1;
             setupPagination(filteredProducts);
-            displayProducts(filteredProducts, currentPage);
+            displayProducts(filteredProducts, currentPage, true);
         }
 
         // Adição dos listeners de eventos
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof catalogoProdutos !== 'undefined' && Array.isArray(catalogoProdutos)) {
+                updatePriceToggleButton();
                 filteredProducts = catalogoProdutos;
                 setupPagination(filteredProducts);
-                displayProducts(filteredProducts, currentPage);
+                displayProducts(filteredProducts, currentPage, false);
             } else {
-                productTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Erro: O catálogo de produtos não foi carregado corretamente. Por favor, verifique se o arquivo produtos.js existe e está na mesma pasta.</td></tr>';
+                productTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Erro: O catálogo de produtos não foi carregado corretamente. Por favor, verifique se o arquivo produtos.js existe e está na mesma pasta.</td></tr>';
             }
         });
 
@@ -1576,6 +1684,7 @@
         document.getElementById('saveCartButton').addEventListener('click', saveCart);
         document.getElementById('savedCartsButton').addEventListener('click', showSavedCartsModal);
         document.getElementById('clientDataBtn').addEventListener('click', showClientDataModal);
+        document.getElementById('priceTypeToggleButton').addEventListener('click', toggleGlobalPriceType);
         document.getElementById('closeSavedCartsModalBtn').addEventListener('click', hideSavedCartsModal);
         document.getElementById('closeClientDataModalBtn').addEventListener('click', hideClientDataModal);
         
@@ -1597,12 +1706,9 @@
                 const action = target.dataset.action;
                 const id = target.dataset.id;
                 const delta = parseInt(target.dataset.delta);
-                const priceType = target.value;
                 
                 if (action === 'change-quantity') {
                     changeQuantity(id, delta);
-                } else if (action === 'change-price') {
-                    changePriceType(id, priceType);
                 }
             });
         }
